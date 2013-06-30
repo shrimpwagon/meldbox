@@ -1,0 +1,19 @@
+define(
+	[
+		"jquery",
+		"jquery.contextMenu",
+		"jquery-pagedesigner",
+		"codemirror",
+		"css",
+		"htmlmixed",
+		"xml",
+		"javascript",
+		"formatting",
+		"backbone",
+		"underscore",
+		"base64"
+	],
+	function() {
+		init();
+	}
+);

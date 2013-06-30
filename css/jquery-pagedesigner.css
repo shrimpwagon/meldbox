@@ -1,0 +1,196 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+html, body {
+	min-height: 100%;
+	position: relative;
+	font-family: Verdana;
+	background: #EEE;
+	height: 100%;
+	font-size: .9em;
+}
+
+#menu {
+	background-color: #EEE;
+	border-bottom: 1px solid #808080;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	z-index: 2147483647;
+}
+
+	#menu a {
+		display: block;
+		height: 21px;
+		padding: 2px 10px;
+		color: #333;
+		text-decoration: none;
+	}
+	
+	#menu a:hover {
+		background-color: #999;
+	}
+
+	#menu > div {
+		float: left;
+		position: relative;
+	}
+	
+	#menu > div > a {
+		border-right: 1px solid #DDD;
+	}
+	
+	#menu > div > div {
+		display: none;
+	}
+	
+	#menu > div:hover > a {
+		border-right: 1px solid #808080;
+	}
+	
+	#menu > div:hover > div {
+		background-color: #EEE;
+		position: absolute;
+		top: 25px;
+		display: block;
+		z-index: 1000000;
+		width: 200px;
+		border-top: 1px solid #808080;
+		border-right: 1px solid #808080;
+		border-bottom: 1px solid #808080;
+		border-left: 1px solid #808080;
+	}
+	
+	#menu > div > div > a > span.ui-icon {
+		float: left;
+		color: #333;
+	}
+	
+	#menu > div > div > div.seperator{
+		border-top: 1px solid #808080;
+	}
+	
+.pd-tool-container {
+	width: 305px;
+	position: absolute;
+	top: 26px;
+	background: #EEE;
+	z-index: 2147483646;
+	position: fixed;
+	overflow-y: scroll;
+	max-height: 100%;
+	border-bottom: 1px solid #808080;
+}
+
+.pd-tool-container .pd-tool-panel:last-child {
+	margin-bottom: 26px;
+}
+	
+#pd-tool-container-left {
+	left: 0px;
+	border-right:  1px solid #808080;
+}
+
+#pd-tool-container-right {
+	right: 0px;
+	border-left:  1px solid #808080;
+}
+
+.pd-tool-panel {
+	border-bottom: 1px solid #808080;
+	padding: 8px;
+}
+
+#design-area {
+	width: 1px;
+	position: relative;
+	margin: 26px 0px 0px 0px;
+	float: right;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}
+
+#selection-boxes {
+	position: relative;
+}
+
+.selection-box {
+	position: absolute;
+	cursor: move;
+	pointer-events: none;
+	z-index: 9999;
+}
+
+#design-canvas {
+	background: #FFF;
+	position: absolute;
+	top: 30px;
+	left: -1030px;
+	width: 1024px;
+	height: 1400px;
+	border: 1px solid #DDD;
+	overflow: hidden;
+}
+	
+#container {
+	position: relative;
+}
+
+	#container > div {
+		cursor: move;
+		position: absolute !important;
+	}
+
+#file-title {
+	margin-left: 30%;
+	margin-top: 3px;
+	font-style: italic;
+}
+
+.box {
+	width: 100px;
+	background-color: #00FF00;
+	height: 100px;
+}
+
+input[type="text"]:focus {
+	box-shadow: 1px 1px 3px rgba(0, 0, 255, .3), -1px -1px 3px rgba(0, 0, 255, .3);
+}
+
+input[type="radio"], input[type="checkbox"] {
+	margin: 0px;
+}
+
+.ui-front {
+	z-index: 10000 !important;
+}
+
+.dialog-text {
+	font-size: 11px !important;
+	width: 260px;
+	height: 180px;
+}
+
+.panel-header {
+	margin-bottom: 8px;
+}
+
+.panel-controls {
+	float: right;
+	margin-left: 12px;
+}
+
+.panel-control {
+	cursor: pointer;
+}
+
+.panel-note {
+	color: #999;
+	font-size: 11px;
+}

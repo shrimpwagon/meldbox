@@ -1,0 +1,142 @@
+<div style="top: 173px; left: 48px; position: absolute; width: 900px; height: auto; background: none repeat scroll 0% 0% transparent;" id="obj-8" class="box clickable ui-draggable ui-resizable ui-resizable-autohide"><span><h1>
+  Meldbox is an in-browser web page and app designer for web prototyping and HTML mock ups using advanced CSS3.
+</h1>
+<br>
+<p>
+  It utilizes the web browser's natural ability to create visual elements using the newest CSS3 implementations.
+</p>
+<br>
+<p>
+  Saves time by not having to design or work off of a web layout in Photoshop, Illustrator or Fireworks.
+</p>
+<br>
+<p>
+  Since CSS is used for designing, the web layout and elements are already mostly coded!
+</p>
+<br>
+<p>
+  Easily incorporate front-end frameworks such as Twitter Bootstrap, jQuery mobile UI or a custom framework (coming very soon).
+</p>
+<br>
+<p>
+  Design a form as it would appear in a browser without trying to recreate it in a design program like Photoshop, Illustrator or Fireworks (no offense to these programs).
+</p>
+<br>
+<p>
+  Simply add a box and make it into a visual web element to create a web page or app design using CSS.
+</p>
+<br>
+<p>
+  Since it's already in a browser it doubles as an online HTML and CSS previewer (much better than Dreamweaver).
+</p>
+<br>
+<p>
+  Built with jQuery, Underscorejs, Backbonejs, FontAwesome, Codemirror, a little bit of PHP and a ton of Javascript.
+</p>
+<br>
+<p>
+  Programming skills are not required however advanced HTML and CSS developers will be able to pick it up very easily.
+</p>
+<br>
+<p>
+  It was built by a web developer for web development in an attempt to free the web developer of relying on design software.
+</p>
+<br>
+<p>
+  It is open source and free.
+</p>
+<br>
+<p>
+  PHP is required but can be easily altered to work in any parser.
+</p>
+<br>
+<p>
+  The browser designer can be easily customized.
+</p>
+<br>
+<p>
+  How-to videos are coming soon!
+</p>
+<br>
+<p>
+  It is a browser based online designer so it works on Windows, Linux or Mac.
+</p>
+<br>
+<p>
+  The idea came from realizing that web designers were drawing web elements that a browser, using CSS, can already do.
+</p>
+<br>
+<p>
+  The functions and features are loosly taken from Fireworks and Firebug.
+</p>
+<br>
+<p>
+  It is 
+  <strong>NOT</strong>
+  a web page creator.
+</p>
+<br>
+<p>
+  It is 
+  <strong>NOT</strong>
+  for anyone to just willy-nilly make a "web page."
+  <br>
+</p>
+<br>
+<p>
+  It is a tool to aid a web developer with designing web pages and apps in a browser thus skipping the need to design in a graphics program and then having to code it afterwards.
+</p>
+<br>
+<p>
+  Meldbox is brand new, just released in June of 2013.
+</p>
+<br>
+<p>
+  As of right now there is no documentation, sorry.
+</p>
+<br>
+<p>
+  Basic instructions and hotkeys are provided in the application
+</p>
+<br>
+<p>
+  Works in Firefox/Iceweasel, probably in Chrome, maybe in Safari, not in IE (nor will it ever be, IE sucks!).
+</p>
+<br>
+<p>
+  Currently, Meldbox does not have bitmap or vector drawing ability so logos and background images would still be designed in a seperate program.
+</p>
+<br>
+<p>
+  It's also beta.
+</p>
+<br>
+<p>
+  Some things will probably be broken
+</p>
+<br>
+<p>
+  It's currently in a first release so a lot of features and functionality are missing.
+</p>
+<br>
+<p>
+  Got it?
+</p>
+<br>
+<p>
+  Good :)
+</p>
+<br>
+<p>
+  Here is a penguin
+  <br>
+  <i class="icon icon-linux" style="font-size: 24px;">
+  </i>
+</p></span></div><div style="top: 38px; left: 127px; width: auto; height: auto; background: none repeat scroll 0% 0% transparent; padding: 20px;" id="obj-12" class="box clickable"><span><img src="img/logo-large.png"></span></div><div style="top: 42px; width: 200px; height: auto; text-align: center; padding: 8px 0px; border-radius: 12px 12px 12px 12px; color: rgb(255, 255, 255); left: 548px; background: none repeat scroll 0% 0% green;" id="obj-13" class="box clickable"><span><span style="font-size: 18px;"><i class="icon icon-usd">
+  </i> Donate<br>Paypal</span></span></div><div style="top: 42px; width: 200px; height: auto; text-align: center; padding: 8px 0px; border-radius: 12px 12px 12px 12px; color: rgb(255, 255, 255); left: 334px; background: none repeat scroll 0% 0% red;" id="obj-14" class="box clickable"><span><span style="font-size: 18px;"><i class="icon icon-cloud-download">
+  </i> Download<br>v1.0 (beta)</span></span></div><div style="top: 42px; width: 200px; height: auto; text-align: center; padding: 8px 0px; border-radius: 12px 12px 12px 12px; color: rgb(255, 255, 255); left: 763px; background: none repeat scroll 0% 0% blue;" id="obj-15" class="box clickable"><span><span style="font-size: 18px;"><i class="icon icon-github">
+  </i> Github<br>Git the code!</span></span></div><div style="top: 119px; left: 778px; width: 160px; height: auto; background: none repeat scroll 0% 0% rgb(153, 153, 153); color: rgb(255, 255, 255); font-size: 18px; text-align: center; border-radius: 6px 6px 6px 6px;" id="obj-16" class="box clickable"><span>
+<i class="icon icon-code">
+</i> View Demo</span></div><div style="top: 114px; left: 962px; width: 60px; height: auto; font-size: 28px; background: none repeat scroll 0% 0% transparent;" id="obj-17" class="box clickable"><span><i class="icon icon-facebook" style="color: #3B5998;">
+</i> <i class="icon icon-twitter" style="color: #00ACEE"></i></span></div><div style="top: 119px; left: 606px; width: 160px; height: auto; background: none repeat scroll 0% 0% rgb(153, 153, 153); color: rgb(255, 255, 255); font-size: 18px; text-align: center; border-radius: 6px 6px 6px 6px;" id="obj-19" class="box clickable"><span><i class="icon icon-bug">
+</i> Report Bug</span></div>
