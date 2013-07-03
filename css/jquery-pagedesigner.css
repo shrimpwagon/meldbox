@@ -164,7 +164,7 @@ input[type="text"]:focus {
 }
 
 input[type="radio"], input[type="checkbox"] {
-	margin: 0px;
+	vertical-align: text-bottom;
 }
 
 .ui-front {
@@ -193,4 +193,10 @@ input[type="radio"], input[type="checkbox"] {
 .panel-note {
 	color: #999;
 	font-size: 11px;
+}
+
+.css-lib-div {
+	border-top: 1px solid #999;
+	padding-top: 10px;
+	margin-bottom: 10px;
 }

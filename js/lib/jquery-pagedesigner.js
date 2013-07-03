@@ -1,22 +1,41 @@
-/*!
- * Meldbox is an in-browser web page and app designer for web prototyping and HTML mock ups using advanced CSS3.
- *
- * Version: git-master
- *
- * Authors: Shawn Welch <shawn@meldbox.net>
- * Web: https://github.com/shrimpwagon/meldbox
- *
- * Licensed under
- *   MIT License http://www.opensource.org/licenses/mit-license
- *   GPL v3 http://opensource.org/licenses/GPL-3.0
- *
- */
+/*
+
+Meldbox
+Version: 1.1
+
+Author:
+	Shawn Welch <shawn@meldbox.net>
+	
+Web:
+	https://github.com/shrimpwagon/meldbox
+	http://meldbox.net
+		
+License:
+	GPL v3 http://www.gnu.org/licenses/gpl.html
+
+Meldbox is an open source, in-browser web page and app designer for developers
+Copyright (C) 2013 by Shawn Welch <shawn@meldbox.net>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
 
 function PageDesigner() {
 
 
 	/***********************
-	 * Classes
+	 * Backbonjs - Selectbox
 	 ***********************/
 	var SelectboxCollection = Backbone.Collection.extend({
 		initialize: function() {
@@ -375,20 +394,21 @@ function PageDesigner() {
 	var _$clipboard = new Array();
 	var _$focused = undefined;
 	var _orig_position;
-	var _orig_shadow;
 	var _$edit_text = $('#edit-text');
 	var _$style_text = $('#style-text');
 	var _saved_flag = true;
 	var _$file_title = $('#file-title');
-	var _$selection_box = $('');
 	var _$selection_boxes = $('#selection-boxes');
 	var _this = this;
 	var _selectbox_collection = new SelectboxCollection;
 	var _$distrib_horz_txt = $('#distrib-horz-txt');
 	var _$distrib_vert_txt = $('#distrib-vert-txt');
+	var _$css_libraries = $('#css-libraries');
 	
 	
-	// Private functions
+	/*************************
+	 * Private functions
+	 *************************/
 	var _insert_object = function(content, paste) {
 		console.log(content);
 		var obj_id = 'obj-' + (++_obj_id);
@@ -588,10 +608,60 @@ function PageDesigner() {
 		_selectbox_collection.reset();
 		_set_style_text('');
 		_set_edit_text('');
-		_$container.empty();
+		$('.box', _$container).remove();
 		_set_file_title('Untitled');
 		_saved_flag = true;
 		_obj_id = 0;
+	}
+	
+	var _import_css = function(file) {
+		if(!file) return false;
+		var id = md5(file);
+		 $.ajax('css/lib/' + file, {
+		 	'dataType': 'text',
+		 	'success': function(data) {
+		 		//parser = new less.Parser({});
+				//parser.parse('#container { ' + data + ' } ', function (error, root) {
+					_$container.append('<style id="' + id + '-css-lib-data" data-desc="' + file + '" type="text/plain" class="css-lib" scoped>' + data + '</style>');
+					_update_history();
+					_append_css_lib(id, file);
+				//});
+		 	}
+		 });
+	}
+	
+	var _append_css_lib = function(id, desc) {
+		var checkbox_id = id + '-css-lib-checkbox';
+		var remove_id = id + '-css-lib-remove';
+		if($('#' + checkbox_id).length) return false;
+		_$css_libraries.append('<div id="' + id + '-css-lib-div" class="css-lib-div">' + desc + '<br /><input type="checkbox" value="' + id + '" id="' + checkbox_id + '" /> Apply <button id="' + remove_id + '">Remove</button></div>');
+		$('#' + checkbox_id).on('click', function() {
+			var $this = $(this);
+			var css_lib_id = $this.val();
+			if($this.is(':checked')) {
+				_apply_css_style(css_lib_id);
+				_update_history();
+				
+			} else {
+				_remove_css_style(css_lib_id);
+				_update_history();
+			}
+		});
+		$('#' + remove_id).on('click', function() {
+			$('#' + id + '-css-lib-data').remove();
+			$('#' + id + '-css-lib-div').remove();
+			_update_history();
+		});
+	}
+	
+	var _apply_css_style = function(css_lib_id) {
+		var $css_lib_data = $('#' + css_lib_id + '-css-lib-data');
+		$css_lib_data.attr('type', 'text/css');
+	}
+	
+	var _remove_css_style = function(css_lib_id) {
+		var css_lib_data = $('#' + css_lib_id + '-css-lib-data');
+		css_lib_data.attr('type', 'text/plain');
 	}
 	
 	var _open_file = function(file) {
@@ -613,6 +683,25 @@ function PageDesigner() {
 				if(obj_id > _obj_id) _obj_id = obj_id;
 				
 				_bind_object($object);
+			});
+			
+			// Reset CSS library
+			_$css_libraries.empty();
+			
+			// Add CSS data libraries
+			$('.css-lib').each(function(i, elem) {
+				var $data = $(elem);
+				var css_lib_id = $data.attr('id').split('-')[0];
+				var file = $data.attr('data-desc');
+				var type = $data.attr('type');
+				
+				// Add CSS data library to list
+				_append_css_lib(css_lib_id, file);
+				
+				// Apply style and check box
+				if(type == 'text/css') {
+					$('#' + css_lib_id + '-css-lib-checkbox').attr('checked', true);
+				}
 			});
 		});
 	}
@@ -881,6 +970,10 @@ function PageDesigner() {
 		if(conf) {
 			_open_file($('#open-file-select').val());
 		}
+	});
+	
+	$('#import-css-btn').bind('click', function() {
+		_import_css($('#css-file-select').val());
 	});
 	
 	

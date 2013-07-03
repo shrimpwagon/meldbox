@@ -11,7 +11,10 @@ define(
 		"formatting",
 		"backbone",
 		"underscore",
-		"base64"
+		"base64",
+		"md5",
+		"utf8_encode",
+		"less"
 	],
 	function() {
 		init();

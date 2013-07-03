@@ -1,0 +1,34 @@
+Fixes
+====================
+- Dragging sometimes "throws" element
+
+
+Feature Requests
+=====================
+- Prototype/Mockup mode
+- Canvas management (size, position, color, etc)
+- rgb() convert to hex in CSS element box
+- up/down arrow delta for distribute inputs
+- Templates
+- Grouping
+- Lock element
+- autosave
+- Delete file
+- Image manager
+- Undo/redo
+- Keyboard reference
+- Better UI converter
+- Ruler
+- Resize panels
+- Hide element
+- Layer manager
+- Info box (object id for reference like clip-path, other stuff?)
+- Grid
+- Align and distribute from midpoint, bottompoint and leftpoint
+- Center on canvas
+- Shift + up or down will increment/decrement CSS pixel values
+- Bitmap editor
+- Vector editor
+- Remember placement of panels
+- Local storage so it doesn't have to run on PHP
+- Edit imported CSS stylesheet libraries and create new ones

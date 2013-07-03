@@ -1,11 +1,51 @@
 <?php
 
+/*
+
+Meldbox
+Version: 1.1
+
+Author:
+	Shawn Welch <shawn@meldbox.net>
+	
+Web:
+	https://github.com/shrimpwagon/meldbox
+	http://meldbox.net
+		
+License:
+	GPL v3 http://www.gnu.org/licenses/gpl.html
+
+Meldbox is an open source, in-browser web page and app designer for developers
+Copyright (C) 2013 by Shawn Welch <shawn@meldbox.net>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
 // Get list of saved files
 $files = array();
 foreach(new DirectoryIterator('saved') as $file) {
 	if($file->isFile()) $files[] = $file->getFilename();
 }
 sort($files);
+
+// Get available CSS libs
+$css_libs = array();
+foreach(new DirectoryIterator('css/lib') as $css_lib) {
+	if($css_lib->isFile()) $css_libs[] = $css_lib->getFilename();
+}
+sort($css_libs);
 
 
 // Subsections
@@ -65,9 +105,10 @@ var init = function() {
 			<div class="seperator"></div>
 			<a href="javascript: $.PageDesigner.toggleDialog('about')" id="menu-about"><span class="icon icon-check"></span> About</a>
 			<a href="javascript: $.PageDesigner.toggleDialog('style')" id="menu-style"><span class="icon icon-check"></span> CSS Element Style</a>
-			<a href="javascript: $.PageDesigner.toggleDialog('distribute')" id="menu-distribute"><span class="icon icon-check-empty"></span> Distribute</a>
+			<a href="javascript: $.PageDesigner.toggleDialog('css')" id="menu-css"><span class="icon icon-check"></span> CSS Library</a>
+			<a href="javascript: $.PageDesigner.toggleDialog('distribute')" id="menu-distribute"><span class="icon icon-check"></span> Distribute</a>
 			<a href="javascript: $.PageDesigner.toggleDialog('innerhtml')" id="menu-innerhtml"><span class="icon icon-check"></span> Inner HTML</a>
-			<a href="javascript: $.PageDesigner.toggleDialog('open')" id="menu-open"><span class="icon icon-check-empty"></span> Open File</a>
+			<a href="javascript: $.PageDesigner.toggleDialog('open')" id="menu-open"><span class="icon icon-check"></span> Open File</a>
 			<!-- <a href="javascript: $.PageDesigner.toggleDialog('conversion')" id="menu-conversion"><span class="icon icon-check-empty"></span> UI Conversion</a> -->
 		</div>
 	</div>
@@ -94,10 +135,6 @@ var init = function() {
 	</div>
 </div>
 
-<!-- Styles -->
-<div id="styles-container">
-</div>
-
 <!-- DIALOGS -->
 <div id="pd-tool-container-left" class="pd-tool-container">
 
@@ -107,10 +144,10 @@ var init = function() {
 		</h4>
 		<div>
 			<p style="text-align: center; font-size: 12px">
-				Meldbox<br />
-				v1.0 (beta)<br /><br />
-				Shawn Welch &lt;<a href="mailto:shawn@meldbox.net">shawn@meldbox.net</a>&gt;<br />
-				Submit issues: <a href="https://meldbox.fogbugz.com/" target="_blank">meldbox.fogbugz.com</a><br /><br />
+				Meldbox v1.1.0<br /><br />
+				Author:<br />
+				Shawn Welch &lt;<a href="mailto:shawn@meldbox.net">shawn@meldbox.net</a>&gt;<br /><br />
+				Source and Issues:<br /><a href="https://github.com/shrimpwagon/meldbox" target="_blank">github.com/shrimpwagon/meldbox</a><br /><br />
 			</p>
 			<div style="text-align: center; font-size: 12px">
 				<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
@@ -124,7 +161,7 @@ var init = function() {
 	</div>
 
 	<div id="innerhtml-panel" data-panel="innerhtml" class="pd-tool-panel">
-		<h4 class="panel-header">Inner HTML
+		<h4 class="panel-header">mBox Inner HTML
 			<?php echo $panel_controls ?>
 		</h4>
 		<div>
@@ -135,7 +172,7 @@ var init = function() {
 	</div>
 
 	<div id="style-panel" data-panel="style" class="pd-tool-panel">
-		<h4 class="panel-header">CSS Element Style
+		<h4 class="panel-header">mBox CSS Style
 			<?php echo $panel_controls ?>
 		</h4>
 		<div>
@@ -160,8 +197,45 @@ var init = function() {
 </div>
 
 <div id="pd-tool-container-right" class="pd-tool-container">
+
+	<div id="css-panel" data-panel="css" class="pd-tool-panel">
+		<h4 class="panel-header">CSS Library
+			<?php echo $panel_controls ?>
+		</h4>
+		<div>
+			<select id="css-file-select" size="5" style="width: 260px">
+			<?php
+			foreach($css_libs as $css_lib) {
+				echo '
+				<option value="' . $css_lib . '">' . $css_lib . '</option>';
+			}
+			?>
+			</select><br />
+			<button type="button" id="import-css-btn">Import</button><br /><br />
+			<div id="css-libraries"></div><br />
+			
+		</div>
+	</div>
+
+	<div id="open-panel" data-panel="open" class="pd-tool-panel">
+		<h4 class="panel-header">Open File
+			<?php echo $panel_controls ?>
+		</h4>
+		<div>
+			<select id="open-file-select" size="10" style="width: 260px">
+			<?php
+			foreach($files as $file) {
+				echo '
+				<option value="' . $file . '">' . $file . '</option>';
+			}
+			?>
+			</select><br /><br />
+			<button type="button" id="open-file-btn">Open</button>
+		</div>
+	</div>
 	
-	<div id="distribute-panel" data-panel="distribute" class="pd-tool-panel" style="display: none;">
+	
+	<div id="distribute-panel" data-panel="distribute" class="pd-tool-panel">
 		<h4 class="panel-header">Distribute
 			<?php echo $panel_controls ?>
 		</h4>
@@ -177,23 +251,6 @@ var init = function() {
 				</tr>
 			</table>
 			<span class="panel-note">Update: (Enter)</span>
-		</div>
-	</div>
-
-	<div id="open-panel" data-panel="open" class="pd-tool-panel" style="display: none;">
-		<h4 class="panel-header">Open File
-			<?php echo $panel_controls ?>
-		</h4>
-		<div>
-			<select id="open-file-select" size="10" style="width: 260px">
-			<?php
-			foreach($files as $file) {
-				echo '
-				<option value="' . $file . '">' . $file . '</option>';
-			}
-			?>
-			</select><br />
-			<button type="button" id="open-file-btn">Open</button>
 		</div>
 	</div>
 	
