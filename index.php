@@ -48,11 +48,13 @@ foreach(new DirectoryIterator('css/lib') as $css_lib) {
 sort($css_libs);
 
 
-// Subsections
+// Panel control buttons
+/* Add these later
+<i class="icon icon-chevron-sign-left panel-control shift-left-panel"></i> 
+<i class="icon icon-chevron-sign-right panel-control shift-right-panel"></i> 
+*/
 $panel_controls = '
 <div class="panel-controls">
-	<i class="icon icon-chevron-sign-left panel-control shift-left-panel"></i> 
-	<i class="icon icon-chevron-sign-right panel-control shift-right-panel"></i> 
 	<i class="icon icon-chevron-sign-up panel-control shift-up-panel"></i> 
 	<i class="icon icon-chevron-sign-down panel-control shift-down-panel"></i> 
 	<i class="icon icon-minus-sign panel-control expand-panel"></i>
@@ -104,11 +106,12 @@ var init = function() {
 			<a href="javascript: $.PageDesigner.closeDialogs()" id="menu-closedialogs">Close All Windows</a>
 			<div class="seperator"></div>
 			<a href="javascript: $.PageDesigner.toggleDialog('about')" id="menu-about"><span class="icon icon-check"></span> About</a>
+			<a href="javascript: $.PageDesigner.toggleDialog('canvas')" id="menu-canvas"><span class="icon icon-check-empty"></span> Canvas</a>
 			<a href="javascript: $.PageDesigner.toggleDialog('style')" id="menu-style"><span class="icon icon-check"></span> CSS Element Style</a>
-			<a href="javascript: $.PageDesigner.toggleDialog('css')" id="menu-css"><span class="icon icon-check"></span> CSS Library</a>
-			<a href="javascript: $.PageDesigner.toggleDialog('distribute')" id="menu-distribute"><span class="icon icon-check"></span> Distribute</a>
+			<a href="javascript: $.PageDesigner.toggleDialog('css')" id="menu-css"><span class="icon icon-check-empty"></span> CSS Library</a>
+			<a href="javascript: $.PageDesigner.toggleDialog('distribute')" id="menu-distribute"><span class="icon icon-check-empty"></span> Distribute</a>
 			<a href="javascript: $.PageDesigner.toggleDialog('innerhtml')" id="menu-innerhtml"><span class="icon icon-check"></span> Inner HTML</a>
-			<a href="javascript: $.PageDesigner.toggleDialog('open')" id="menu-open"><span class="icon icon-check"></span> Open File</a>
+			<a href="javascript: $.PageDesigner.toggleDialog('open')" id="menu-open"><span class="icon icon-check-empty"></span> Open File</a>
 			<!-- <a href="javascript: $.PageDesigner.toggleDialog('conversion')" id="menu-conversion"><span class="icon icon-check-empty"></span> UI Conversion</a> -->
 		</div>
 	</div>
@@ -137,6 +140,87 @@ var init = function() {
 
 <!-- DIALOGS -->
 <div id="pd-tool-container-left" class="pd-tool-container">
+
+	<!--
+	<div id="conversion-panel" data-panel="conversion" class="pd-tool-panel" style="display: none;">
+		<h4 class="panel-header">UI Conversion
+			<?php echo $panel_controls ?>
+		</h4>
+		<div style="display: none;">
+			<iframe src="/ui-converter.php" style="width: 305px; height: 360px; border: 0;" seamleass="seamless" scrolling="no"></iframe>
+		</div>
+	</div>
+	-->
+
+	
+	<div id="css-panel" data-panel="css" class="pd-tool-panel" style="display: none;">
+		<h4 class="panel-header">CSS Library
+			<?php echo $panel_controls ?>
+		</h4>
+		<div>
+			<select id="css-file-select" size="5">
+			<?php
+			foreach($css_libs as $css_lib) {
+				echo '
+				<option value="' . $css_lib . '">' . $css_lib . '</option>';
+			}
+			?>
+			</select><br />
+			<button type="button" id="import-css-btn">Import</button><br /><br />
+			<div id="css-libraries"></div><br />
+			
+		</div>
+	</div>
+
+	<div id="open-panel" data-panel="open" class="pd-tool-panel" style="display: none;">
+		<h4 class="panel-header">Open File
+			<?php echo $panel_controls ?>
+		</h4>
+		<div>
+			<select id="open-file-select" size="10">
+			<?php
+			foreach($files as $file) {
+				echo '
+				<option value="' . $file . '">' . $file . '</option>';
+			}
+			?>
+			</select><br /><br />
+			<button type="button" id="open-file-btn">Open</button>
+		</div>
+	</div>
+	
+	<div id="canvas-panel" data-panel="canvas" class="pd-tool-panel" style="display: none;">
+		<h4 class="panel-header">Canvas
+			<?php echo $panel_controls ?>
+		</h4>
+		<div>
+			Alignment: 
+			<select id="canvas-alignment">
+				<option value="left">Left</option>
+				<option value="none">Center</option>
+				<option value="right">Right</option>
+			</select>
+		</div>
+	</div>
+	
+	<div id="distribute-panel" data-panel="distribute" class="pd-tool-panel" style="display: none;">
+		<h4 class="panel-header">Distribute
+			<?php echo $panel_controls ?>
+		</h4>
+		<div>
+			<table cellspacing="0" cellpadding="0">
+				<tr>
+					<td style="text-align: right; padding-right: 5px">Horizontal:</td>
+					<td><input type="text" id="distrib-horz-txt" style="width: 30px; text-align: right;" /> px</td>
+				</tr>
+				<tr>
+					<td style="text-align: right; padding-right: 5px">Vertical:</td>
+					<td><input type="text" id="distrib-vert-txt" style="width: 30px; text-align: right;" /> px</td>
+				</tr>
+			</table>
+			<span class="panel-note">Update: (Enter)</span>
+		</div>
+	</div>
 
 	<div id="about-panel" data-panel="about" class="pd-tool-panel">
 		<h4 class="panel-header">About
@@ -181,80 +265,13 @@ var init = function() {
 			<span style="float: right;"><input type="checkbox" onclick="$.PageDesigner.toggleWrap(this)" data-cm="StyleText" /> Wrap text</span>
 		</div>
 	</div>
-
-	<!--
-	<div id="conversion-panel" data-panel="conversion" class="pd-tool-panel" style="display: none;">
-		<h4 class="panel-header">UI Conversion
-			<?php echo $panel_controls ?>
-		</h4>
-		<div style="display: none;">
-			<iframe src="/ui-converter.php" style="width: 305px; height: 360px; border: 0;" seamleass="seamless" scrolling="no"></iframe>
-		</div>
-	</div>
-	-->
-
 	
 </div>
 
-<div id="pd-tool-container-right" class="pd-tool-container">
+<!--
+<div id="pd-tool-container-right" class="pd-tool-container"></div>
+-->
 
-	<div id="css-panel" data-panel="css" class="pd-tool-panel">
-		<h4 class="panel-header">CSS Library
-			<?php echo $panel_controls ?>
-		</h4>
-		<div>
-			<select id="css-file-select" size="5" style="width: 260px">
-			<?php
-			foreach($css_libs as $css_lib) {
-				echo '
-				<option value="' . $css_lib . '">' . $css_lib . '</option>';
-			}
-			?>
-			</select><br />
-			<button type="button" id="import-css-btn">Import</button><br /><br />
-			<div id="css-libraries"></div><br />
-			
-		</div>
-	</div>
-
-	<div id="open-panel" data-panel="open" class="pd-tool-panel">
-		<h4 class="panel-header">Open File
-			<?php echo $panel_controls ?>
-		</h4>
-		<div>
-			<select id="open-file-select" size="10" style="width: 260px">
-			<?php
-			foreach($files as $file) {
-				echo '
-				<option value="' . $file . '">' . $file . '</option>';
-			}
-			?>
-			</select><br /><br />
-			<button type="button" id="open-file-btn">Open</button>
-		</div>
-	</div>
-	
-	
-	<div id="distribute-panel" data-panel="distribute" class="pd-tool-panel">
-		<h4 class="panel-header">Distribute
-			<?php echo $panel_controls ?>
-		</h4>
-		<div>
-			<table cellspacing="0" cellpadding="0">
-				<tr>
-					<td style="text-align: right; padding-right: 5px">Horizontal:</td>
-					<td><input type="text" id="distrib-horz-txt" style="width: 30px; text-align: right;" /> px</td>
-				</tr>
-				<tr>
-					<td style="text-align: right; padding-right: 5px">Vertical:</td>
-					<td><input type="text" id="distrib-vert-txt" style="width: 30px; text-align: right;" /> px</td>
-				</tr>
-			</table>
-			<span class="panel-note">Update: (Enter)</span>
-		</div>
-	</div>
-	
-</div>
 <?php @include('../google_analytics.php') ?>
 </body>
 </html>

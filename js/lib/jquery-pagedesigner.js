@@ -380,6 +380,108 @@ function PageDesigner() {
 	
 	
 	/***********************
+	 * Backbonejs - Control Panels
+	 ***********************/
+	var ControlPanelCollection = Backbone.Collection.extend({
+		initialize: function() {
+			this.add(new CanvasControlPanel());
+		},
+		
+		resetPanels: function() {
+			console.log(this.models);
+			_.each(this.models, function(cpm) {
+				cpm.attributes.resetPanel();
+			});
+		}
+	});
+	
+	var ControlPanelModel = Backbone.Collection.extend({
+		initialize: function(options) {},
+		
+		resetPanel: function() {}
+	});
+	
+	var ControlPanelView = Backbone.View.extend({
+		events: {
+			"click .shift-up-panel"		: "moveUp",
+			"click .shift-down-panel"	: "moveDown",
+			"click .expand-panel"		: "expand",
+			"click .remove-panel"		: "remove"
+		},
+		
+		// @TODO: Move the control panel buttons here
+		moveUp: function() {
+		},
+		
+		moveDown: function() {
+		},
+		
+		expand: function() {
+		},
+		
+		remove: function() {
+		}
+	});
+	
+	
+	/*************************
+	 * Backbonejs - Canvas Control Panel
+	 *************************/
+	var CanvasControlPanel = ControlPanelModel.extend({
+		initialize: function(options) {
+			this.view = new CanvasControlPanelView();
+		},
+		
+		resetPanel: function() {
+			this.view.resetPanel();
+		}
+	});
+	
+	var CanvasControlPanelView = ControlPanelView.extend({
+		el: '#canvas-panel',
+	
+		initialize: function() {
+			// Panel inputs
+			this.$canvas_alignment = $('#canvas-alignment');
+		
+			// Panel input methods
+			this.events = $.extend({}, this.events, {
+				"change #canvas-alignment"	: "alignCanvas"
+			});
+		},
+		
+		resetPanel: function() {
+			var float = _$design_area.css('float');
+			this.$canvas_alignment.val(float);
+		},
+		
+		alignCanvas: function(event) {
+			var float = this.$canvas_alignment.val();
+			var canvas_width = _$design_canvas.width();
+			var canvas_left;
+			
+			switch(float) {
+				case 'left':
+					canvas_left = 4;
+				break;
+				
+				case 'none':
+					canvas_left = Math.round(canvas_width / 2) * -1;
+				break;
+				
+				case 'right':
+					canvas_left = (canvas_width + 4) * -1;
+				break;
+			}
+			
+			$('#canvas-alignment-style').remove();
+			_$container.append('<style id="canvas-alignment-style"> #design-area { float: ' + float + '; } #design-canvas { left: ' + canvas_left + 'px; } </style>');
+			_update_history();
+		}
+	});
+	
+	
+	/***********************
 	 * Private vars
 	 ***********************/
 	var _obj_id = 0;
@@ -390,6 +492,8 @@ function PageDesigner() {
 	var _shift_down_flag = false;
 	var _key_down_event;
 	var _grab_object = false;
+	var _$design_area = $('#design-area');
+	var _$design_canvas = $('#design-canvas');
 	var _$container = $('#container');
 	var _$clipboard = new Array();
 	var _$focused = undefined;
@@ -400,7 +504,8 @@ function PageDesigner() {
 	var _$file_title = $('#file-title');
 	var _$selection_boxes = $('#selection-boxes');
 	var _this = this;
-	var _selectbox_collection = new SelectboxCollection;
+	var _selectbox_collection = new SelectboxCollection();
+	var _control_panel_collection = new ControlPanelCollection();
 	var _$distrib_horz_txt = $('#distrib-horz-txt');
 	var _$distrib_vert_txt = $('#distrib-vert-txt');
 	var _$css_libraries = $('#css-libraries');
@@ -703,6 +808,9 @@ function PageDesigner() {
 					$('#' + css_lib_id + '-css-lib-checkbox').attr('checked', true);
 				}
 			});
+			
+			// Reset panels
+			_control_panel_collection.resetPanels();
 		});
 	}
 	
@@ -1113,6 +1221,7 @@ function PageDesigner() {
 			document.activeElement.blur();
 		}
 	});
+	cmEditText.setSize('100%', 120);
 	
 	var cmStyleText = CodeMirror.fromTextArea(_$style_text[0], {mode:"css"});
 	cmStyleText.on('keypress', function(instance, event) {
@@ -1121,6 +1230,7 @@ function PageDesigner() {
 			document.activeElement.blur();
 		}
 	});
+	cmStyleText.setSize('100%', 120);
 	
 	
 	/*********************************

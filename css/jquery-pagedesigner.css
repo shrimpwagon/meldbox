@@ -107,7 +107,7 @@ html, body {
 #design-area {
 	width: 1px;
 	position: relative;
-	margin: 26px 0px 0px 0px;
+	margin: 26px auto;
 	float: right;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
@@ -174,7 +174,7 @@ input[type="radio"], input[type="checkbox"] {
 .dialog-text {
 	font-size: 11px !important;
 	width: 260px;
-	height: 180px;
+	height: 100px;
 }
 
 .panel-header {
@@ -196,7 +196,7 @@ input[type="radio"], input[type="checkbox"] {
 }
 
 .css-lib-div {
-	border-top: 1px solid #999;
+	border-top: 1px solid #DDD;
 	padding-top: 10px;
 	margin-bottom: 10px;
 }
