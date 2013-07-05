@@ -149,8 +149,8 @@
       alert("Welcome to Meldbox!\n\n" + browser_warning + screen_warning + "Hold Ctrl to click and drag.");
     }
     catch(e) {
-      console.log(e);
+      if(console && console.log) console.log(e);
     }
   }
                    );
-</script></span></div><style id="canvas-alignment-style"> #design-area { float: right; } #design-canvas { left: -1028px; } </style>
+</script></span></div><style id="canvas-alignment-style"> #design-area { float: right; height: 1500px; } #design-canvas { left: -1028px; } </style>

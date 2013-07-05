@@ -1,7 +1,7 @@
 /*
 
 Meldbox
-Version: 1.1
+Version: 1.2.0
 
 Author:
 	Shawn Welch <shawn@meldbox.net>
@@ -388,7 +388,6 @@ function PageDesigner() {
 		},
 		
 		resetPanels: function() {
-			console.log(this.models);
 			_.each(this.models, function(cpm) {
 				cpm.attributes.resetPanel();
 			});
@@ -441,23 +440,83 @@ function PageDesigner() {
 		el: '#canvas-panel',
 	
 		initialize: function() {
-			// Panel inputs
+			// Panel inputs jQuery cache
 			this.$canvas_alignment = $('#canvas-alignment');
+			this.$canvas_resize_origin = $('#canvas-resize-origin');
+			this.$canvas_resize_width = $('#canvas-resize-width');
+			this.$canvas_resize_height = $('#canvas-resize-height');
 		
 			// Panel input methods
 			this.events = $.extend({}, this.events, {
-				"change #canvas-alignment"	: "alignCanvas"
+				"change #canvas-alignment"		: "alignCanvas",
+				"keyup #canvas-resize-width"	: "resizeCanvas",
+				"keyup #canvas-resize-height"	: "resizeCanvas"
 			});
+		},
+		
+		resizeCanvas: function(e) {
+			if(e.keyCode == 13) {
+				var new_width = parseInt(this.$canvas_resize_width.val());
+				var new_height = parseInt(this.$canvas_resize_height.val());
+				if(isNaN(new_width) || isNaN(new_height)) return false;
+				
+				var origin = this.$canvas_resize_origin.val().split('-');
+				var x_anchor = origin[1];
+				var y_anchor = origin[0];
+				var canvas_width = _$design_canvas.width();
+				var canvas_height = _$design_canvas.height();
+				
+				var offset_x_right = new_width - canvas_width;
+				var offset_y_bottom = new_height - canvas_height;
+				var offset_x_center = Math.round(offset_x_right / 2);
+				var offset_y_middle = Math.round(offset_y_bottom / 2);
+				
+				// Iterate over elements and move
+				$('.box').each(function(i, elem) {
+					var $elem = $(elem);
+					var position = $elem.position();
+					var top = position.top;
+					var left = position.left;
+					
+					if(x_anchor == 'right') left += offset_x_right;
+					else if(x_anchor == 'center') left += offset_x_center;
+					
+					if(y_anchor == 'bottom') top += offset_y_bottom;
+					else if(y_anchor == 'middle') top += offset_y_middle;
+					$elem.css({'top': top + 'px', 'left': left + 'px'});
+				});
+				
+			
+				// Add resize style tag to container
+				$('#canvas-resize-style').remove();
+				_$container.append('<style id="canvas-resize-style"> #design-canvas { width: ' + new_width + 'px; height: ' + new_height + 'px; } </style>');
+				
+				// Reposition canvas
+				this.alignCanvas();
+				
+				// Update history change
+				_update_history();
+				
+			} else if(e.keyCode == 27) {
+				document.activeElement.blur();
+			}
 		},
 		
 		resetPanel: function() {
 			var float = _$design_area.css('float');
 			this.$canvas_alignment.val(float);
+			
+			var canvas_width = _$design_canvas.width();
+			var canvas_height = _$design_canvas.height();
+			
+			this.$canvas_resize_width.val(canvas_width);
+			this.$canvas_resize_height.val(canvas_height);
 		},
 		
-		alignCanvas: function(event) {
+		alignCanvas: function() {
 			var float = this.$canvas_alignment.val();
 			var canvas_width = _$design_canvas.width();
+			var canvas_height = _$design_canvas.height();
 			var canvas_left;
 			
 			switch(float) {
@@ -475,7 +534,7 @@ function PageDesigner() {
 			}
 			
 			$('#canvas-alignment-style').remove();
-			_$container.append('<style id="canvas-alignment-style"> #design-area { float: ' + float + '; } #design-canvas { left: ' + canvas_left + 'px; } </style>');
+			_$container.append('<style id="canvas-alignment-style"> #design-area { float: ' + float + '; height: ' + (canvas_height + 100) + 'px; } #design-canvas { left: ' + canvas_left + 'px; } </style>');
 			_update_history();
 		}
 	});
@@ -774,43 +833,49 @@ function PageDesigner() {
 	
 		_blur();
 	
-		_$container.load('saved/' + encodeURIComponent(file), function(responseText, textStatus, XMLHttpRequest) {
-			if(XMLHttpRequest.status != 200) return;
+		$.ajax('saved/' + encodeURIComponent(file) + '?' + _random_string(), {
+			'dataType': 'html',
 			
-			_set_cookie('open_file', file, 735);
+			'statusCode': {
+				200: function(html) {
+					_$container.html(html);
 			
-			_set_file_title(file);
-			_saved_flag = true;
+					_set_cookie('open_file', file, 735);
+			
+					_set_file_title(file);
+					_saved_flag = true;
 		
-			$('> *', _$container).each(function() {
-				var $object = $(this);
-				var obj_id = parseInt($object.attr('id').split('-')[1]);
-				if(obj_id > _obj_id) _obj_id = obj_id;
+					$('> *', _$container).each(function() {
+						var $object = $(this);
+						var obj_id = parseInt($object.attr('id').split('-')[1]);
+						if(obj_id > _obj_id) _obj_id = obj_id;
 				
-				_bind_object($object);
-			});
+						_bind_object($object);
+					});
 			
-			// Reset CSS library
-			_$css_libraries.empty();
+					// Reset CSS library
+					_$css_libraries.empty();
 			
-			// Add CSS data libraries
-			$('.css-lib').each(function(i, elem) {
-				var $data = $(elem);
-				var css_lib_id = $data.attr('id').split('-')[0];
-				var file = $data.attr('data-desc');
-				var type = $data.attr('type');
+					// Add CSS data libraries
+					$('.css-lib').each(function(i, elem) {
+						var $data = $(elem);
+						var css_lib_id = $data.attr('id').split('-')[0];
+						var file = $data.attr('data-desc');
+						var type = $data.attr('type');
 				
-				// Add CSS data library to list
-				_append_css_lib(css_lib_id, file);
+						// Add CSS data library to list
+						_append_css_lib(css_lib_id, file);
 				
-				// Apply style and check box
-				if(type == 'text/css') {
-					$('#' + css_lib_id + '-css-lib-checkbox').attr('checked', true);
+						// Apply style and check box
+						if(type == 'text/css') {
+							$('#' + css_lib_id + '-css-lib-checkbox').attr('checked', true);
+						}
+					});
+			
+					// Reset panels
+					_control_panel_collection.resetPanels();
 				}
-			});
-			
-			// Reset panels
-			_control_panel_collection.resetPanels();
+			}
 		});
 	}
 	
@@ -1241,6 +1306,17 @@ function PageDesigner() {
 		exdate.setDate(exdate.getDate() + exdays);
 		var c_value = escape(value) + ((exdays == null) ? "" : "; expires=" + exdate.toUTCString());
 		document.cookie = c_name + "=" + c_value;
+	}
+	
+	var _random_string = function(string_length) {
+		var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+		if(!string_length) string_length = 8;
+		var randomstring = '';
+		for (var i = 0; i < string_length; i++) {
+			var rnum = Math.floor(Math.random() * chars.length);
+			randomstring += chars.substring(rnum,rnum+1);
+		}
+		return randomstring;
 	}
 }
 

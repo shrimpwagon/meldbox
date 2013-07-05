@@ -3,7 +3,7 @@
 /*
 
 Meldbox
-Version: 1.1
+Version: 1.2.0
 
 Author:
 	Shawn Welch <shawn@meldbox.net>
@@ -63,6 +63,7 @@ $panel_controls = '
 
 // Default file open
 $open_file = $_COOKIE['open_file'];
+if(!is_file('saved/' . $open_file)) $open_file = '';
 if(!$open_file && is_file('saved/Welcome')) $open_file = 'Welcome';
 
 ?>
@@ -158,7 +159,7 @@ var init = function() {
 			<?php echo $panel_controls ?>
 		</h4>
 		<div>
-			<select id="css-file-select" size="5">
+			<select id="css-file-select" size="5" style="width: 100%;">
 			<?php
 			foreach($css_libs as $css_lib) {
 				echo '
@@ -177,7 +178,7 @@ var init = function() {
 			<?php echo $panel_controls ?>
 		</h4>
 		<div>
-			<select id="open-file-select" size="10">
+			<select id="open-file-select" size="10" style="width: 100%;">
 			<?php
 			foreach($files as $file) {
 				echo '
@@ -200,6 +201,34 @@ var init = function() {
 				<option value="none">Center</option>
 				<option value="right">Right</option>
 			</select>
+			<br /><br />
+			<table cellspacing="0" cellpadding="0">
+				<tr>
+					<td class="panel-field-label">Resize Origin:</td>
+					<td>
+						<select id="canvas-resize-origin">
+							<option value="top-left">Top, Left</option>
+							<option value="top-center">Top, Center</option>
+							<option value="top-right">Top, Right</option>
+							<option value="middle-left">Middle, Left</option>
+							<option value="middle-center">Middle, Center</option>
+							<option value="middle-right">Middle, Right</option>
+							<option value="bottom-left">Bottom, Left</option>
+							<option value="bottom-center">Bottom, Center</option>
+							<option value="bottom-right">Bottom, Right</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td class="panel-field-label">Resize Width:</td>
+					<td><input type="text" class="panel-px-input" id="canvas-resize-width" /> px</td>
+				</tr>
+				<tr>
+					<td class="panel-field-label">Resize Height:</td>
+					<td><input type="text" class="panel-px-input" id="canvas-resize-height" /> px</td>
+				</tr>
+			</table>
+			<span class="panel-note">Update: (Enter)</span>
 		</div>
 	</div>
 	
@@ -210,12 +239,12 @@ var init = function() {
 		<div>
 			<table cellspacing="0" cellpadding="0">
 				<tr>
-					<td style="text-align: right; padding-right: 5px">Horizontal:</td>
-					<td><input type="text" id="distrib-horz-txt" style="width: 30px; text-align: right;" /> px</td>
+					<td>Horizontal:</td>
+					<td><input type="text" id="distrib-horz-txt" class="panel-px-input" /> px</td>
 				</tr>
 				<tr>
-					<td style="text-align: right; padding-right: 5px">Vertical:</td>
-					<td><input type="text" id="distrib-vert-txt" style="width: 30px; text-align: right;" /> px</td>
+					<td class="panel-field-label">Vertical:</td>
+					<td><input type="text" id="distrib-vert-txt" class="panel-px-input" /> px</td>
 				</tr>
 			</table>
 			<span class="panel-note">Update: (Enter)</span>

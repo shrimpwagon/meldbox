@@ -5,8 +5,9 @@ Fixes
 
 Feature Requests
 =====================
+- Remember placement of panels
 - Prototype/Mockup mode
-- Canvas management (size, position, color, etc)
+- Trim canvas
 - rgb() convert to hex in CSS element box
 - up/down arrow delta for distribute inputs
 - Templates
@@ -29,6 +30,5 @@ Feature Requests
 - Shift + up or down will increment/decrement CSS pixel values
 - Bitmap editor
 - Vector editor
-- Remember placement of panels
 - Local storage so it doesn't have to run on PHP
 - Edit imported CSS stylesheet libraries and create new ones
