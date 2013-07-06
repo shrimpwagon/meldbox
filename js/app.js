@@ -11,7 +11,7 @@ requirejs.config({
 		"javascript": ["codemirror"],
 		"formatting": ["codemirror"],
 		"backbone": ["underscore"],
-		"jquery-pagedesigner": [
+		"meldbox": [
 			"jquery",
 			"jquery.contextMenu",
 			"codemirror",

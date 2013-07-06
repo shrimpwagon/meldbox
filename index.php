@@ -3,7 +3,7 @@
 /*
 
 Meldbox
-Version: 1.2.0
+Version: 1.3
 
 Author:
 	Shawn Welch <shawn@meldbox.net>
@@ -62,9 +62,12 @@ $panel_controls = '
 </div>';
 
 // Default file open
-$open_file = $_COOKIE['open_file'];
-if(!is_file('saved/' . $open_file)) $open_file = '';
+$open_file = ($_GET['open_file']) ? $_GET['open_file'] : $_COOKIE['open_file'];
+if($open_file && !is_file('saved/' . $open_file)) $open_file = '';
 if(!$open_file && is_file('saved/Welcome')) $open_file = 'Welcome';
+
+// Open in preiview mode
+$preview_mode = $_GET['preview_mode'];
 
 ?>
 <!DOCTYPE html>
@@ -74,14 +77,15 @@ if(!$open_file && is_file('saved/Welcome')) $open_file = 'Welcome';
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
 <link rel="stylesheet" type="text/css" href="css/jquery.contextMenu.css" />
-<link rel="stylesheet" type="text/css" href="css/jquery-pagedesigner.css" />
+<link rel="stylesheet" type="text/css" href="css/meldbox.css" />
 <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css" />
 <link rel="stylesheet" type="text/css" href="css/codemirror.css" />
 
 <script>
 var init = function() {
-	$.PageDesigner = new PageDesigner();
-	$.PageDesigner.openFile('<?php echo $open_file ?>');
+	$.Meldbox = new Meldbox();
+	$.Meldbox.openFile('<?php echo $open_file ?>', true);
+	<?php if($preview_mode) { ?>$.Meldbox.previewMode(true); <?php } ?>
 }
 </script>
 <script data-main="js/app" src="js/lib/require.js"></script>
@@ -95,25 +99,25 @@ var init = function() {
 	<div style="margin-left: 20px;">
 		<a href="javascript: void(0)">File</a>
 		<div>
-			<a href="javascript: $.PageDesigner.newDesign()">New</a>
-			<a href="javascript: $.PageDesigner.toggleDialog('open', true)">Open</a>
-			<a href="javascript: $.PageDesigner.saveDesign()">Save</a>
-			<a href="javascript: $.PageDesigner.saveDesign(true)">Save As...</a>
+			<a href="javascript: $.Meldbox.newDesign()">New</a>
+			<a href="javascript: $.Meldbox.toggleDialog('open', true)">Open</a>
+			<a href="javascript: $.Meldbox.saveDesign()">Save</a>
+			<a href="javascript: $.Meldbox.saveDesign(true)">Save As...</a>
 		</div>
 	</div>
 	<div>
-		<a href="javascript: void(0)">Window</a>
+		<a href="javascript: void(0)">View</a>
 		<div>
-			<a href="javascript: $.PageDesigner.closeDialogs()" id="menu-closedialogs">Close All Windows</a>
+			<a href="javascript: $.Meldbox.closeDialogs()" id="menu-closedialogs">Close All</a>
 			<div class="seperator"></div>
-			<a href="javascript: $.PageDesigner.toggleDialog('about')" id="menu-about"><span class="icon icon-check"></span> About</a>
-			<a href="javascript: $.PageDesigner.toggleDialog('canvas')" id="menu-canvas"><span class="icon icon-check-empty"></span> Canvas</a>
-			<a href="javascript: $.PageDesigner.toggleDialog('style')" id="menu-style"><span class="icon icon-check"></span> CSS Element Style</a>
-			<a href="javascript: $.PageDesigner.toggleDialog('css')" id="menu-css"><span class="icon icon-check-empty"></span> CSS Library</a>
-			<a href="javascript: $.PageDesigner.toggleDialog('distribute')" id="menu-distribute"><span class="icon icon-check-empty"></span> Distribute</a>
-			<a href="javascript: $.PageDesigner.toggleDialog('innerhtml')" id="menu-innerhtml"><span class="icon icon-check"></span> Inner HTML</a>
-			<a href="javascript: $.PageDesigner.toggleDialog('open')" id="menu-open"><span class="icon icon-check-empty"></span> Open File</a>
-			<!-- <a href="javascript: $.PageDesigner.toggleDialog('conversion')" id="menu-conversion"><span class="icon icon-check-empty"></span> UI Conversion</a> -->
+			<a href="javascript: $.Meldbox.toggleDialog('about')" id="menu-about"><span class="icon icon-check"></span> About</a>
+			<a href="javascript: $.Meldbox.toggleDialog('canvas')" id="menu-canvas"><span class="icon icon-check-empty"></span> Canvas</a>
+			<a href="javascript: $.Meldbox.toggleDialog('style')" id="menu-style"><span class="icon icon-check"></span> CSS Element Style</a>
+			<a href="javascript: $.Meldbox.toggleDialog('css')" id="menu-css"><span class="icon icon-check-empty"></span> CSS Library</a>
+			<a href="javascript: $.Meldbox.toggleDialog('distribute')" id="menu-distribute"><span class="icon icon-check-empty"></span> Distribute</a>
+			<a href="javascript: $.Meldbox.toggleDialog('innerhtml')" id="menu-innerhtml"><span class="icon icon-check"></span> Inner HTML</a>
+			<a href="javascript: $.Meldbox.toggleDialog('open')" id="menu-open"><span class="icon icon-check-empty"></span> Open File</a>
+			<!-- <a href="javascript: $.Meldbox.toggleDialog('conversion')" id="menu-conversion"><span class="icon icon-check-empty"></span> UI Conversion</a> -->
 		</div>
 	</div>
 	<div>
@@ -126,6 +130,9 @@ var init = function() {
 			<a href="http://svg-edit.googlecode.com/svn/branches/2.6/editor/svg-editor.html" target="_blank">SVG Editor</a>
 			<a href="http://css3gen.com/text-shadow/" target="_blank">Text Shadows</a>
 		</div>
+	</div>
+	<div>
+		<a href="javascript: $.Meldbox.previewMode(true)">Preview</a>
 	</div>
 	<div id="file-title">Untitled</div>
 	<br style="clear: both;" />
@@ -257,7 +264,7 @@ var init = function() {
 		</h4>
 		<div>
 			<p style="text-align: center; font-size: 12px">
-				Meldbox v1.1.0<br /><br />
+				Meldbox v1.3<br /><br />
 				Author:<br />
 				Shawn Welch &lt;<a href="mailto:shawn@meldbox.net">shawn@meldbox.net</a>&gt;<br /><br />
 				Source and Issues:<br /><a href="https://github.com/shrimpwagon/meldbox" target="_blank">github.com/shrimpwagon/meldbox</a><br /><br />
@@ -280,7 +287,7 @@ var init = function() {
 		<div>
 			<textarea id="edit-text" class="dialog-text edit-area" data-editarea="html" wrap="off"></textarea>
 			<span class="panel-note">Update: (Ctrl + Enter)</span>
-			<span style="float: right;"><input type="checkbox" onclick="$.PageDesigner.toggleWrap(this)" data-cm="EditText" /> Wrap text</span>
+			<span style="float: right;"><input type="checkbox" onclick="$.Meldbox.toggleWrap(this)" data-cm="EditText" /> Wrap text</span>
 		</div>
 	</div>
 
@@ -291,7 +298,7 @@ var init = function() {
 		<div>
 			<textarea id="style-text" class="dialog-text edit-area" data-editarea="css" wrap="off"></textarea>
 			<span class="panel-note">Update: (Ctrl + Enter)</span>
-			<span style="float: right;"><input type="checkbox" onclick="$.PageDesigner.toggleWrap(this)" data-cm="StyleText" /> Wrap text</span>
+			<span style="float: right;"><input type="checkbox" onclick="$.Meldbox.toggleWrap(this)" data-cm="StyleText" /> Wrap text</span>
 		</div>
 	</div>
 	

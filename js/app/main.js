@@ -2,7 +2,7 @@ define(
 	[
 		"jquery",
 		"jquery.contextMenu",
-		"jquery-pagedesigner",
+		"meldbox",
 		"codemirror",
 		"css",
 		"htmlmixed",

@@ -1,7 +1,7 @@
 /*
 
 Meldbox
-Version: 1.2.0
+Version: 1.3
 
 Author:
 	Shawn Welch <shawn@meldbox.net>
@@ -31,11 +31,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-function PageDesigner() {
+function Meldbox() {
 
 
 	/***********************
-	 * Backbonjs - Selectbox
+	 * Backbonejs - Selectbox
 	 ***********************/
 	var SelectboxCollection = Backbone.Collection.extend({
 		initialize: function() {
@@ -521,7 +521,7 @@ function PageDesigner() {
 			
 			switch(float) {
 				case 'left':
-					canvas_left = 4;
+					canvas_left = -1;
 				break;
 				
 				case 'none':
@@ -529,7 +529,7 @@ function PageDesigner() {
 				break;
 				
 				case 'right':
-					canvas_left = (canvas_width + 4) * -1;
+					canvas_left = (canvas_width - 1) * -1;
 				break;
 			}
 			
@@ -549,6 +549,7 @@ function PageDesigner() {
 	var _mouse_down;
 	var _mouse_up;
 	var _shift_down_flag = false;
+	var _preview_mode_flag = false;
 	var _key_down_event;
 	var _grab_object = false;
 	var _$design_area = $('#design-area');
@@ -649,6 +650,9 @@ function PageDesigner() {
 	}
 	
 	var _focus = function($object, event, paste) {
+		// Return if in preview mode
+		if(_preview_mode_flag) return false;
+	
 		if((event && event.shiftKey && !event.ctrlKey) || paste) {
 		
 			// Find if clicking again and remove
@@ -828,8 +832,12 @@ function PageDesigner() {
 		css_lib_data.attr('type', 'text/plain');
 	}
 	
-	var _open_file = function(file) {
+	var _open_file = function(file, force) {
+		// Required
 		if(!file) return;
+		
+		// Needs to be either command from panel, from method or in preview mode
+		if(!force && !_preview_mode_flag) return;
 	
 		_blur();
 	
@@ -896,6 +904,38 @@ function PageDesigner() {
 	
 	var _update_style_text = function() {
 		_selectbox_collection.updateStyle(cmStyleText.getValue());
+	}
+	
+	var _preview_mode = function(on) {
+		if(on) {
+			// Let them know how to get back
+			alert("Press 'Esc' to exit preview mode");
+		
+			_blur();
+			_preview_mode_flag = true;
+			
+			// Hide the menu
+			$('#menu').hide('slow');
+			
+			// Hide the tool containters
+			$('.pd-tool-container').hide('slow');
+			
+			// Get rid of margins on the canvas
+			_$design_area.css({'margin': '0px auto'});
+			
+			
+		} else {
+			_preview_mode_flag = false;
+			
+			// Hide the menu
+			$('#menu').show('slow');
+			
+			// Hide the tool containters
+			$('.pd-tool-container').show('slow');
+			
+			// Get rid of margins on the canvas
+			_$design_area.css({'margin': '40px auto'});
+		}
 	}
 	
 	
@@ -1031,9 +1071,10 @@ function PageDesigner() {
 				_selectbox_collection.setZIndexDelta(-1);
 			}
 		
-			// Blur (esc)
+			// Blur or exit preview mode (esc)
 			else if(e.keyCode == 27) {
-				_blur();
+				if(_preview_mode_flag) _preview_mode(false);		
+				else _blur();
 			}
 		
 			// Delete
@@ -1141,7 +1182,7 @@ function PageDesigner() {
 		if(!_saved_flag)
 			conf = confirm('File has not been saved!\n\nAre you sure you want to load file?');
 		if(conf) {
-			_open_file($('#open-file-select').val());
+			_open_file($('#open-file-select').val(), true);
 		}
 	});
 	
@@ -1167,7 +1208,10 @@ function PageDesigner() {
 		}
 	});
 	
-	// Menu functions
+	
+	/**************************
+	 * Public methods
+	 **************************/
 	this.toggleDialog = function(panel, open) {
 		var $panel = $('#' + panel + '-panel');
 		var $check = $('#menu-' + panel + ' span');
@@ -1201,8 +1245,8 @@ function PageDesigner() {
 		_save_html(save_as);
 	}
 	
-	this.openFile = function(file) {
-		_open_file(file);
+	this.openFile = function(file, force) {
+		_open_file(file, force);
 	}
 	
 	this.toggleWrap = function(checkbox) {
@@ -1221,12 +1265,22 @@ function PageDesigner() {
 		cm.setOption('lineWrapping', lineWrapping);
 	}
 	
-	// Stop default browser drag
+	this.previewMode = function(on) {
+		_preview_mode(on);
+	}
+	
+	
+	/**************************
+	 * Stop default browser drag
+	 **************************/
 	$(document).bind("dragstart", function(e) {
 		if(!$(e.target).hasClass('ui-dialog')) return false;
 	});
 	
-	// Panel controls
+	
+	/**************************
+	 * Panel controls
+	 **************************/
 	$('.expand-panel').on('click', function(event) {
 		var $this = $(this);
 		var $panel_div = $('> div', $this.parent().parent().parent());

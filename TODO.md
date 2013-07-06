@@ -1,12 +1,13 @@
-Fixes
-====================
+# TODO:
+
+## Fixes
+
 - Dragging sometimes "throws" element
 
 
-Feature Requests
-=====================
+## Features
+
 - Remember placement of panels
-- Prototype/Mockup mode
 - Trim canvas
 - rgb() convert to hex in CSS element box
 - up/down arrow delta for distribute inputs
@@ -18,7 +19,7 @@ Feature Requests
 - Image manager
 - Undo/redo
 - Keyboard reference
-- Better UI converter
+- UI converter
 - Ruler
 - Resize panels
 - Hide element
@@ -27,7 +28,7 @@ Feature Requests
 - Grid
 - Align and distribute from midpoint, bottompoint and leftpoint
 - Center on canvas
-- Shift + up or down will increment/decrement CSS pixel values
+- Shift + up or down while in codemirror editor will increment/decrement CSS pixel values
 - Bitmap editor
 - Vector editor
 - Local storage so it doesn't have to run on PHP
