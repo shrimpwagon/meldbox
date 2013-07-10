@@ -7,7 +7,7 @@ html, body {
 	min-height: 100%;
 	position: relative;
 	font-family: Verdana;
-	background: #EEE;
+	background: #DDD;
 	height: 100%;
 	font-size: .9em;
 }
@@ -217,4 +217,11 @@ input[type="radio"], input[type="checkbox"] {
 .panel-px-input {
 	width: 30px;
 	text-align: right;
+}
+
+#mb-multi-select {
+	position: absolute;
+	z-index: 2147483647;
+	background: #3333FF;
+	opacity: .25;
 }

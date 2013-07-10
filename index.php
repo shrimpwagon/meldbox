@@ -3,7 +3,7 @@
 /*
 
 Meldbox
-Version: 1.3
+Version: 1.4
 
 Author:
 	Shawn Welch <shawn@meldbox.net>
@@ -141,6 +141,7 @@ var init = function() {
 <!-- Page -->
 <div id="design-area">
 	<div id="design-canvas" class="clickable">
+		<div id="mb-multi-select"></div>
 		<div id="selection-boxes"></div>
 		<div id="container" class="clickable"></div>
 	</div>
@@ -269,6 +270,7 @@ var init = function() {
 				Shawn Welch &lt;<a href="mailto:shawn@meldbox.net">shawn@meldbox.net</a>&gt;<br /><br />
 				Source and Issues:<br /><a href="https://github.com/shrimpwagon/meldbox" target="_blank">github.com/shrimpwagon/meldbox</a><br /><br />
 			</p>
+			<!--
 			<div style="text-align: center; font-size: 12px">
 				<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
 					<input type="hidden" name="cmd" value="_s-xclick">
@@ -277,6 +279,7 @@ var init = function() {
 					<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
 				</form>
 			</div>
+			-->
 		</div>
 	</div>
 

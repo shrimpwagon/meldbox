@@ -1,7 +1,7 @@
 /*
 
 Meldbox
-Version: 1.3
+Version: 1.4
 
 Author:
 	Shawn Welch <shawn@meldbox.net>
@@ -53,6 +53,7 @@ function Meldbox() {
 			// Throttled methods ??
 			this.moveSelection = _.throttle(this.moveSelectionThrottled, 100);
 		},
+		mouseDown: undefined,
 		findByObject: function($object) {
 			return _.findWhere(this.models, {'id': $object.attr('id')});
 		},
@@ -76,18 +77,18 @@ function Meldbox() {
 		},
 		moveSelectionThrottled: function(e) {
 			if(e.shiftKey) {
-				if(_mouse_distance(_mouse_down, e) > 30) {
-					var x_distance = Math.abs(_mouse_down.pageX - e.pageX);
-					var y_distance = Math.abs(_mouse_down.pageY - e.pageY);
+				if(_mouse_distance(this.mouseDown, e) > 30) {
+					var x_distance = Math.abs(this.mouseDown.pageX - e.pageX);
+					var y_distance = Math.abs(this.mouseDown.pageY - e.pageY);
 					if(x_distance >= y_distance) {
 						this.setPositionDelta({
 							'top': 0,
-							'left': (e.pageX - _mouse_down.pageX)
+							'left': (e.pageX - this.mouseDown.pageX)
 						});
 						
 					} else if(y_distance > x_distance) {
 						this.setPositionDelta({
-							'top': (e.pageY - _mouse_down.pageY),
+							'top': (e.pageY - this.mouseDown.pageY),
 							'left': 0
 						});
 					}
@@ -101,8 +102,8 @@ function Meldbox() {
 				
 			} else {
 				this.setPositionDelta({
-					'top': (e.pageY - _mouse_down.pageY),
-					'left': (e.pageX - _mouse_down.pageX)
+					'top': (e.pageY - this.mouseDown.pageY),
+					'left': (e.pageX - this.mouseDown.pageX)
 				});
 			}
 			
@@ -540,14 +541,177 @@ function Meldbox() {
 	});
 	
 	
+	/*************************
+	 * Backbonejs - Multi Select
+	 *************************/
+	var MultiSelect	= Backbone.Model.extend({
+		initialize: function(options) {
+			this.enabled = false;
+		
+			this.view = new MultiSelectView({
+				'model': this
+			});
+		},
+		
+		mouseDown: function(mouse_event) {
+			// Set flag
+			this.enabled = true;
+			
+			// Reset selected items if not pressing shift
+			if(!mouse_event.shiftKey) _selectbox_collection.reset();
+		
+			this.container_offset = _$container.offset();
+			
+			var pageX = mouse_event.pageX - this.container_offset.left;
+			var pageY = mouse_event.pageY - this.container_offset.top;
+			
+			this.set({
+				'top': pageY,
+				'left': pageX,
+				'origTop': pageY,
+				'origLeft': pageX,
+				'width': 0,
+				'height': 0
+			});
+		},
+		
+		mouseMove: function(mouse_event) {
+			var pageX = mouse_event.pageX - this.container_offset.left;
+			var pageY = mouse_event.pageY - this.container_offset.top;
+			var attr = this.attributes;
+			var top = (pageY < attr.origTop) ? pageY : attr.origTop;
+			var left = (pageX < attr.origLeft) ? pageX : attr.origLeft;
+			var width = Math.abs(pageX - attr.origLeft);
+			var height = Math.abs(pageY - attr.origTop);
+			
+			this.set({
+				'top': top,
+				'left': left,
+				'width': width,
+				'height': height
+			});
+		},
+		
+		mouseUp: function(event) {
+			// Turn off
+			this.enabled = false;
+		
+			/*
+			
+			Get coords of select box and elements
+			
+			x1, y1 o----------------------o x2, y1
+			       |                      |
+			       |                      |
+			       |                      |
+			       |                      |
+			       |                      |
+			       |                      |
+			       |                      |
+			       |                      |
+			x1, y2 o----------------------o x2, y2
+			
+			ms = multi select box
+			el = meldbox element
+			   
+			*/
+			
+			var attr = this.attributes;
+			var ms_x1 = attr.left;
+			var ms_x2 = attr.left + attr.width;
+			var ms_y1 = attr.top;
+			var ms_y2 = attr.top + attr.height;
+			
+			// Iterate over all elements and determine if they are within the multi select box
+			$('.box').each(function(i, elem) {
+				var selected = new Array();
+				var $object = $(elem);
+				var position = $object.position();
+				var width = $object.width();
+				var height = $object.height();
+				
+				var el_x1 = position.left;
+				var el_x2 = position.left + width;
+				var el_y1 = position.top;
+				var el_y2 = position.top + height;
+				
+				// Determine if rectangles (elements) intersect
+				if((ms_x1 < el_x2) && (ms_x2 > el_x1) && (ms_y1 < el_y2) && (ms_y2 > el_y1)) {
+				
+					if(event.shiftKey) {
+						// Find if clicking again and remove
+						if(!_selectbox_collection.removeByObject($object))
+							_selectbox_collection.add([new SelectboxModel({'$object': $object})]);
+			
+					} else {
+						/*
+						if(_selectbox_collection.findByObject($object)) {
+							return false;
+			
+						} else {
+						*/
+							_selectbox_collection.add([new SelectboxModel({'$object': $object})]);
+						//}
+					}
+				}
+			});
+			
+			// _selectbox_collection.reset()
+			
+			// Stop if nothing is selected
+			if(_selectbox_collection.length == 0) return;
+	
+			// Set text box
+			_set_edit_text();
+
+			// Set style box
+			_set_style_text();
+
+			// Blur any focused element
+			$(document.activeElement).blur();
+			
+			// Remove selection box
+			this.reset();
+		},
+		
+		reset: function() {
+			this.set({
+				'top': 0,
+				'left': 0,
+				'width': 0,
+				'height': 0
+			});
+		}
+	});
+	
+	var MultiSelectView = Backbone.View.extend({
+		el: '#mb-multi-select',
+	
+		initialize: function() {
+			this.model = this.options.model;
+			this.listenTo(this.model, "change", this.render);
+		},
+		
+		render: function() {
+			var attr = this.model.attributes;
+			this.$el.css({
+				'top': attr.top + 'px',
+				'left': attr.left + 'px',
+				'width': attr.width + 'px',
+				'height': attr.height + 'px'
+			});
+		}
+	});
+	
+	
 	/***********************
 	 * Private vars
 	 ***********************/
 	var _obj_id = 0;
 	var _mouse_move_event;
-	var _mouse_click;
-	var _mouse_down;
-	var _mouse_up;
+	var _mouse_click = undefined;
+	var _mouse_down = undefined;
+	var _mouse_up = undefined;
 	var _shift_down_flag = false;
 	var _preview_mode_flag = false;
 	var _key_down_event;
@@ -557,7 +721,6 @@ function Meldbox() {
 	var _$container = $('#container');
 	var _$clipboard = new Array();
 	var _$focused = undefined;
-	var _orig_position;
 	var _$edit_text = $('#edit-text');
 	var _$style_text = $('#style-text');
 	var _saved_flag = true;
@@ -569,13 +732,13 @@ function Meldbox() {
 	var _$distrib_horz_txt = $('#distrib-horz-txt');
 	var _$distrib_vert_txt = $('#distrib-vert-txt');
 	var _$css_libraries = $('#css-libraries');
+	var _multi_select = new MultiSelect();
 	
 	
 	/*************************
 	 * Private functions
 	 *************************/
 	var _insert_object = function(content, paste) {
-		console.log(content);
 		var obj_id = 'obj-' + (++_obj_id);
 		var $object = $(content).attr('id', obj_id);
 		
@@ -857,7 +1020,7 @@ function Meldbox() {
 						var $object = $(this);
 						var obj_id = parseInt($object.attr('id').split('-')[1]);
 						if(obj_id > _obj_id) _obj_id = obj_id;
-				
+						
 						_bind_object($object);
 					});
 			
@@ -948,12 +1111,12 @@ function Meldbox() {
 	
 	$(document).mousedown(function(e) {
 		_mouse_down = e;
-	});
-	
-	$(document).mouseup(function(e) {
-		_mouse_up = e;
-		_grab_object = false;
-		_selectbox_collection.dropSelection();
+		
+		if($(e.target).is('body, #design_canvas')) {
+			_multi_select.mouseDown(e);
+		}
+		
+		_selectbox_collection.mouseDown = _mouse_down;
 	});
 	
 	$(document).mousemove(function(e) {
@@ -964,6 +1127,27 @@ function Meldbox() {
 		// Move grabbed object
 		if(_grab_object && e.ctrlKey) {
 			_selectbox_collection.moveSelection(e);
+		}
+		
+		// Resize multi select box
+		if(_multi_select.enabled) {
+			_multi_select.mouseMove(e);
+		}
+	});
+	
+	$(document).mouseup(function(e) {
+		_mouse_up = e;
+		_mouse_down = undefined;
+		_mouse_move_event = undefined;
+		
+		
+		if(_grab_object) {
+			_selectbox_collection.dropSelection();
+			_grab_object = false;
+		}
+		
+		if(_multi_select.enabled) {
+			_multi_select.mouseUp(e);
 		}
 	});
 	
