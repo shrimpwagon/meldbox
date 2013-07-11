@@ -644,14 +644,7 @@ function Meldbox() {
 							_selectbox_collection.add([new SelectboxModel({'$object': $object})]);
 			
 					} else {
-						/*
-						if(_selectbox_collection.findByObject($object)) {
-							return false;
-			
-						} else {
-						*/
-							_selectbox_collection.add([new SelectboxModel({'$object': $object})]);
-						//}
+						_selectbox_collection.add([new SelectboxModel({'$object': $object})]);
 					}
 				}
 			});
@@ -951,12 +944,9 @@ function Meldbox() {
 		 $.ajax('css/lib/' + file, {
 		 	'dataType': 'text',
 		 	'success': function(data) {
-		 		//parser = new less.Parser({});
-				//parser.parse('#container { ' + data + ' } ', function (error, root) {
-					_$container.append('<style id="' + id + '-css-lib-data" data-desc="' + file + '" type="text/plain" class="css-lib" scoped>' + data + '</style>');
-					_update_history();
-					_append_css_lib(id, file);
-				//});
+				_$container.append('<style id="' + id + '-css-lib-data" data-desc="' + file + '" type="text/plain" class="css-lib" scoped="scoped">' + data + '</style>');
+				_update_history();
+				_append_css_lib(id, file);
 		 	}
 		 });
 	}

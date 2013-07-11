@@ -2,7 +2,7 @@
 
 ### Meldbox version 1.4
 
-- Added multi selection box when dragging from canvas, outside of canvas or locked elements
+- Added multi selection box when dragging from canvas, outside of canvas or locked elements (coming soon)
 
 ### Meldbox version 1.3
 

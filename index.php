@@ -117,7 +117,6 @@ var init = function() {
 			<a href="javascript: $.Meldbox.toggleDialog('distribute')" id="menu-distribute"><span class="icon icon-check-empty"></span> Distribute</a>
 			<a href="javascript: $.Meldbox.toggleDialog('innerhtml')" id="menu-innerhtml"><span class="icon icon-check"></span> Inner HTML</a>
 			<a href="javascript: $.Meldbox.toggleDialog('open')" id="menu-open"><span class="icon icon-check-empty"></span> Open File</a>
-			<!-- <a href="javascript: $.Meldbox.toggleDialog('conversion')" id="menu-conversion"><span class="icon icon-check-empty"></span> UI Conversion</a> -->
 		</div>
 	</div>
 	<div>
@@ -150,18 +149,6 @@ var init = function() {
 <!-- DIALOGS -->
 <div id="pd-tool-container-left" class="pd-tool-container">
 
-	<!--
-	<div id="conversion-panel" data-panel="conversion" class="pd-tool-panel" style="display: none;">
-		<h4 class="panel-header">UI Conversion
-			<?php echo $panel_controls ?>
-		</h4>
-		<div style="display: none;">
-			<iframe src="/ui-converter.php" style="width: 305px; height: 360px; border: 0;" seamleass="seamless" scrolling="no"></iframe>
-		</div>
-	</div>
-	-->
-
-	
 	<div id="css-panel" data-panel="css" class="pd-tool-panel" style="display: none;">
 		<h4 class="panel-header">CSS Library
 			<?php echo $panel_controls ?>
@@ -265,12 +252,11 @@ var init = function() {
 		</h4>
 		<div>
 			<p style="text-align: center; font-size: 12px">
-				Meldbox v1.3<br /><br />
+				Meldbox v1.4<br /><br />
 				Author:<br />
 				Shawn Welch &lt;<a href="mailto:shawn@meldbox.net">shawn@meldbox.net</a>&gt;<br /><br />
 				Source and Issues:<br /><a href="https://github.com/shrimpwagon/meldbox" target="_blank">github.com/shrimpwagon/meldbox</a><br /><br />
 			</p>
-			<!--
 			<div style="text-align: center; font-size: 12px">
 				<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
 					<input type="hidden" name="cmd" value="_s-xclick">
@@ -279,7 +265,6 @@ var init = function() {
 					<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
 				</form>
 			</div>
-			-->
 		</div>
 	</div>
 
