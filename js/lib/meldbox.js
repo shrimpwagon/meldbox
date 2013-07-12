@@ -1,7 +1,7 @@
 /*
 
 Meldbox
-Version: 1.4
+Version: 1.5
 
 Author:
 	Shawn Welch <shawn@meldbox.net>
@@ -38,6 +38,13 @@ function Meldbox() {
 	 * Backbonejs - Selectbox
 	 ***********************/
 	var SelectboxCollection = Backbone.Collection.extend({
+		// "Private" vars
+		_mouseDown: undefined,
+		_dragReleased: false,
+		_startDrag: false,
+		_updateHistory: false,
+	
+		// Construct
 		initialize: function() {
 			this
 				.on('add', function(selectbox_model) {
@@ -45,18 +52,19 @@ function Meldbox() {
 				})
 				.on('reset', function() {
 					_$selection_boxes.empty();
+					_set_edit_text('');
+					_set_style_text('');
 				})
 				.on('remove', function(selectbox_model) {
 					selectbox_model.view.$el.remove();
 				});
-				
-			// Throttled methods ??
-			this.moveSelection = _.throttle(this.moveSelectionThrottled, 100);
 		},
-		mouseDown: undefined,
+		
+		// Public methods
 		findByObject: function($object) {
 			return _.findWhere(this.models, {'id': $object.attr('id')});
 		},
+		
 		removeByObject: function($object) {
 			var found_sm = this.findByObject($object);
 			
@@ -67,28 +75,34 @@ function Meldbox() {
 			
 			return false;
 		},
+		
 		getObject: function(index) {
 			return this.at(index).attributes.$object;
 		},
-		dropSelection: function() {
-			_.each(this.models, function(sm) {
-				sm.setOrigs();
-			});
+		
+		startDrag: function(mouse_down_event) {
+			this._mouseDown = mouse_down_event;
+			this._dragReleased = false;
+			this._startDrag = true;
 		},
-		moveSelectionThrottled: function(e) {
+		
+		moveSelection: function(e) {
+			if(!this._startDrag) return;
+		
 			if(e.shiftKey) {
-				if(_mouse_distance(this.mouseDown, e) > 30) {
-					var x_distance = Math.abs(this.mouseDown.pageX - e.pageX);
-					var y_distance = Math.abs(this.mouseDown.pageY - e.pageY);
+				if(_mouse_distance(this._mouseDown, e) > 30) {
+					this._dragReleased = true;
+					var x_distance = Math.abs(this._mouseDown.pageX - e.pageX);
+					var y_distance = Math.abs(this._mouseDown.pageY - e.pageY);
 					if(x_distance >= y_distance) {
 						this.setPositionDelta({
 							'top': 0,
-							'left': (e.pageX - this.mouseDown.pageX)
+							'left': (e.pageX - this._mouseDown.pageX)
 						});
 						
 					} else if(y_distance > x_distance) {
 						this.setPositionDelta({
-							'top': (e.pageY - this.mouseDown.pageY),
+							'top': (e.pageY - this._mouseDown.pageY),
 							'left': 0
 						});
 					}
@@ -101,14 +115,32 @@ function Meldbox() {
 				}
 				
 			} else {
-				this.setPositionDelta({
-					'top': (e.pageY - this.mouseDown.pageY),
-					'left': (e.pageX - this.mouseDown.pageX)
-				});
+				// Must move at least 2px before drag happens
+				if(this._dragReleased || _mouse_distance(this._mouseDown, e) > 4) {
+					this._dragReleased = true;
+					this.setPositionDelta({
+						'top': (e.pageY - this._mouseDown.pageY),
+						'left': (e.pageX - this._mouseDown.pageX)
+					});
+				}
 			}
-			
-			_set_style_text();
 		},
+		
+		dropSelection: function(mouse_up_event) {
+			if(!this._startDrag) return;
+			this._startDrag = false;
+		
+			_.each(this.models, function(sm) {
+				sm.setOrigs();
+			});
+			
+			if(this._dragReleased) {
+				_set_style_text();
+				_update_history();
+				this.updateHistory = false;
+			}
+		},
+		
 		setZIndexDelta: function(delta_zindex) {
 			if(!this.length) return;
 			var $object;
@@ -120,34 +152,47 @@ function Meldbox() {
 				$object.css('z-index', zindex);
 			});
 			_set_style_text();
-			_update_history();
+			this.updateHistory = true;
 		},
+		
 		setPositionDelta: function(position, set_orig) {
 			_.each(this.models, function(sm) {
 				sm.setPositionDelta(position);
 				if(set_orig) sm.setOrigs();
 			});
-			_update_history();
+			this.updateHistory = true;
 		},
+		
 		setSizeDelta: function(size) {
 			_.each(this.models, function(sm) {
 				sm.setSizeDelta(size);
 			});
-			_update_history();
+			this.updateHistory = true;
 		},
+		
+		keyUp: function(keyup_event) {
+			if(this.updateHistory) {
+				_update_history();
+				this.updateHistory = false;
+			}
+		},
+		
 		copyToClipboard: function() {
 			_$clipboard = new Array();
 			_.each(this.models, function(sm) {
 				_$clipboard.push(sm.getObject());
 			});
 		},
+		
 		deleteSelected: function() {
+			if(!this.length) return;
 			this.each(function(sm) {
 				sm.getObject().remove();
 			});
 			this.reset();
 			_update_history();
 		},
+		
 		distributeSelected: function(prop) {
 			if(!this.length) return;
 			var sm_array = new Array();
@@ -177,6 +222,7 @@ function Meldbox() {
 			
 			_update_history();
 		},
+		
 		intersectionCSS: function() {
 			var css = new Array();
 			
@@ -190,6 +236,7 @@ function Meldbox() {
 			
 			return css;
 		},
+		
 		updateCSS: function(css) {
 			this.each(function(sm) {
 				sm.getObject().css(css);
@@ -198,6 +245,7 @@ function Meldbox() {
 			_set_style_text();
 			_update_history();
 		},
+		
 		updateStyle: function(style) {
 			style = style.trim().replace(/;[\ \n\t\r]+/g, "; ");
 			if(style.charAt(style.length - 1) != ';') style += ';';
@@ -232,6 +280,7 @@ function Meldbox() {
 			
 			_update_history();
 		},
+		
 		updateHTML: function(html) {
 			this.each(function(sm) {
 				$('> span', sm.getObject()).html(html);
@@ -252,28 +301,34 @@ function Meldbox() {
 			
 			this.initCSS();
 		},
+		
 		initCSS: function() {
 			this.updatePosition();
 			this.updateSize();
 			this.setOrigs();
 			this.trigger('change');
 		},
+		
 		setOrigs: function() {
 			// Remember original positions
 			this.origTop = parseInt(this.top);
 			this.origLeft = parseInt(this.left);
 		},
+		
 		updatePosition: function() {
 			this.top = this.attributes.$object.css('top');
 			this.left = this.attributes.$object.css('left');
 		},
+		
 		updateSize: function() {
 			this.width = this.attributes.$object.outerWidth() - 2;
 			this.height = this.attributes.$object.outerHeight() - 2;
 		},
+		
 		getObject: function() {
 			return this.attributes.$object;
 		},
+		
 		setPositionDelta: function(position) {
 			if(position.top !== undefined) {
 				this.getObject()[0].style.top = (this.origTop + position.top) + 'px';
@@ -288,6 +343,7 @@ function Meldbox() {
 				this.trigger('change');
 			}
 		},
+		
 		setSizeDelta: function(size) {
 			if(size.width !== undefined) {
 				var width = this.getObject().width() + size.width;
@@ -492,11 +548,8 @@ function Meldbox() {
 				$('#canvas-resize-style').remove();
 				_$container.append('<style id="canvas-resize-style"> #design-canvas { width: ' + new_width + 'px; height: ' + new_height + 'px; } </style>');
 				
-				// Reposition canvas
+				// Reposition canvas (will also update history)
 				this.alignCanvas();
-				
-				// Update history change
-				_update_history();
 				
 			} else if(e.keyCode == 27) {
 				document.activeElement.blur();
@@ -545,17 +598,24 @@ function Meldbox() {
 	 * Backbonejs - Multi Select
 	 *************************/
 	var MultiSelect	= Backbone.Model.extend({
+		// "Private" vars
+		_enabled: false,
+	
 		initialize: function(options) {
-			this.enabled = false;
-		
 			this.view = new MultiSelectView({
 				'model': this
 			});
 		},
 		
-		mouseDown: function(mouse_event) {
+		mouseDown: function(mouse_event, force) {
+			// Cancel if in preview mode
+			if(_preview_mode_flag) return;
+		
+			// Only init if selecting from body, canvas or already selected elem
+			if(!$(mouse_event.target).is('body, #design-canvas') && !force) return;
+		
 			// Set flag
-			this.enabled = true;
+			this._enabled = true;
 			
 			// Reset selected items if not pressing shift
 			if(!mouse_event.shiftKey) _selectbox_collection.reset();
@@ -576,6 +636,8 @@ function Meldbox() {
 		},
 		
 		mouseMove: function(mouse_event) {
+			if(!this._enabled) return false;
+		
 			var pageX = mouse_event.pageX - this.container_offset.left;
 			var pageY = mouse_event.pageY - this.container_offset.top;
 			var attr = this.attributes;
@@ -593,8 +655,10 @@ function Meldbox() {
 		},
 		
 		mouseUp: function(event) {
+			if(!this._enabled) return false;
+		
 			// Turn off
-			this.enabled = false;
+			this._enabled = false;
 		
 			/*
 			
@@ -622,46 +686,54 @@ function Meldbox() {
 			var ms_y1 = attr.top;
 			var ms_y2 = attr.top + attr.height;
 			
-			// Iterate over all elements and determine if they are within the multi select box
-			$('.box').each(function(i, elem) {
-				var selected = new Array();
-				var $object = $(elem);
-				var position = $object.position();
-				var width = $object.width();
-				var height = $object.height();
+			// The multi select box needs to be at least 4 x 4 pixels because of deslecting elements with shift down
+			if(attr.width > 3 && attr.height > 3) {
+			
+				// Iterate over all elements and determine if they are within the multi select box
+				$('.box').each(function(i, elem) {
 				
-				var el_x1 = position.left;
-				var el_x2 = position.left + width;
-				var el_y1 = position.top;
-				var el_y2 = position.top + height;
+					var $object = $(elem);
 				
-				// Determine if rectangles (elements) intersect
-				if((ms_x1 < el_x2) && (ms_x2 > el_x1) && (ms_y1 < el_y2) && (ms_y2 > el_y1)) {
+					// Do not select if 'pointer-events: none;' as this menas it's a locked element
+					if($object.css('pointer-events') == 'none') return;
 				
-					if(event.shiftKey) {
-						// Find if clicking again and remove
-						if(!_selectbox_collection.removeByObject($object))
+					var selected = new Array();	
+					var position = $object.position();
+					var width = $object.width();
+					var height = $object.height();
+				
+					var el_x1 = position.left;
+					var el_x2 = position.left + width;
+					var el_y1 = position.top;
+					var el_y2 = position.top + height;
+				
+					// Determine if rectangles (elements) intersect
+					if((ms_x1 < el_x2) && (ms_x2 > el_x1) && (ms_y1 < el_y2) && (ms_y2 > el_y1)) {
+				
+						if(event.shiftKey) {
+							// Find if clicking again and remove
+							if(!_selectbox_collection.removeByObject($object))
+								_selectbox_collection.add([new SelectboxModel({'$object': $object})]);
+			
+						} else {
 							_selectbox_collection.add([new SelectboxModel({'$object': $object})]);
-			
-					} else {
-						_selectbox_collection.add([new SelectboxModel({'$object': $object})]);
+						}
 					}
-				}
-			});
+				});
 			
-			// _selectbox_collection.reset()
-			
-			// Stop if nothing is selected
-			if(_selectbox_collection.length == 0) return;
+				// Do not continue if nothing was selected
+				if(_selectbox_collection.length > 0) {
 	
-			// Set text box
-			_set_edit_text();
+					// Set text box
+					_set_edit_text();
 
-			// Set style box
-			_set_style_text();
+					// Set style box
+					_set_style_text();
 
-			// Blur any focused element
-			$(document.activeElement).blur();
+					// Blur any focused element
+					$(document.activeElement).blur();
+				}
+			}
 			
 			// Remove selection box
 			this.reset();
@@ -705,7 +777,6 @@ function Meldbox() {
 	var _mouse_click = undefined;
 	var _mouse_down = undefined;
 	var _mouse_up = undefined;
-	var _shift_down_flag = false;
 	var _preview_mode_flag = false;
 	var _key_down_event;
 	var _grab_object = false;
@@ -726,20 +797,27 @@ function Meldbox() {
 	var _$distrib_vert_txt = $('#distrib-vert-txt');
 	var _$css_libraries = $('#css-libraries');
 	var _multi_select = new MultiSelect();
+	var _history = new Array();
+	var _history_index = 0;
 	
 	
 	/*************************
 	 * Private functions
 	 *************************/
-	var _insert_object = function(content, paste) {
+	var _insert_object = function(content, paste, css) {
 		var obj_id = 'obj-' + (++_obj_id);
 		var $object = $(content).attr('id', obj_id);
 		
 		if(!paste) {
 			var offset = _$container.offset();
-			var left = Math.round(_mouse_move_event.pageX - offset.left);
-			var top = Math.round(_mouse_move_event.pageY - offset.top);
-			$object.css({'top': top, 'left': left});
+			var left = 0;
+			var top = 0;
+			if(_mouse_move_event) {
+				var left = Math.round(_mouse_move_event.pageX - offset.left);
+				var top = Math.round(_mouse_move_event.pageY - offset.top);
+			}
+			var css = $.extend({}, {'top': top + 'px', 'left': left + 'px'}, (css || {}));
+			$object.css(css);
 		}
 		
 		_$container.append($object);
@@ -751,8 +829,8 @@ function Meldbox() {
 	
 	var _bind_object = function($object) {
 		$object.bind('mousedown', function(e) {
-			_focus($(this), e);
-			_grab_object = true;
+			var $elem = $(this);
+			_focus($elem, e);
 		});
 	}
 	
@@ -805,22 +883,62 @@ function Meldbox() {
 		return style.split("; ");
 	}
 	
+	var _select_all = function() {
+		// Cancel if in preview mode
+		if(_preview_mode_flag) return;
+	
+		// Iterate through all mBox elements
+		$('.box').each(function(i, elem) {
+			var $object = $(elem);
+			if($object.css('pointer-events') == 'none') return;
+			if(!_selectbox_collection.findByObject($object)) _selectbox_collection.add([new SelectboxModel({'$object': $object})]);
+		});
+		
+		// Stop if nothing is selected
+		if(_selectbox_collection.length == 0) return;
+			
+		// Set text box
+		_set_edit_text();
+		
+		// Set style box
+		_set_style_text();
+		
+		// Blur any focused element
+		$(document.activeElement).blur();
+	}
+	
 	var _focus = function($object, event, paste) {
 		// Return if in preview mode
 		if(_preview_mode_flag) return false;
 	
-		if((event && event.shiftKey && !event.ctrlKey) || paste) {
+		if((event && event.shiftKey) || paste) {
 		
 			// Find if clicking again and remove
-			if(!_selectbox_collection.removeByObject($object))
+			if(_selectbox_collection.removeByObject($object)) {
+				//If clicking an already selected element init the multi select tool
+				_multi_select.mouseDown(event, true);
+			}
+			
+			else {
 				_selectbox_collection.add([new SelectboxModel({'$object': $object})]);
 				
-		} else {
-			if(_selectbox_collection.findByObject($object)) {
-				return false;
+				// Init drag if this isn't a paste operation
+				if(!paste) _selectbox_collection.startDrag(event);
+			}
+			
 				
+		} else {
+			// Don't do anything if element is already selected and not pressing shift
+			if(_selectbox_collection.findByObject($object)) {
+				_selectbox_collection.startDrag(event);
+				return false;
+			
+			// Select element and reset selections is not pressing shift	
 			} else {
 				_selectbox_collection.reset().add([new SelectboxModel({'$object': $object})]);
+				
+				// Init drag if this isn't a new element
+				if(event) _selectbox_collection.startDrag(event);
 			}
 		}
 		
@@ -833,20 +951,13 @@ function Meldbox() {
 		// Set style box
 		_set_style_text();
 		
-		// Set the original position needed for dragging ui
-		_orig_position = $object.position();
-		
 		// Blur any focused element
 		$(document.activeElement).blur();
 	}
 	
 	var _blur = function($object) {
-		// Remove (hide) selection box
+		// Remove selection boxes
 		_selectbox_collection.reset();
-		
-		// Remove anything from text boxes
-		_set_edit_text('');
-		_set_style_text('');
 	}
 	
 	var _save_html = function(save_as) {
@@ -922,20 +1033,53 @@ function Meldbox() {
 	}
 	
 	var _update_history = function() {
+		_set_unsaved();
+		_set_history();
+	}
+	
+	var _set_history = function(reset) {
+		if(reset) _history_index = 0;
+	
+		// Slice history using the current history index pointer
+		_history = _history.slice(0, _history_index);
+		var html = _$container.html();
+		var lzw = LZW.compress(html);
+		_history.push(lzw);
+		_history_index++;
+	}
+		
+	var _set_unsaved = function() {
 		if(_saved_flag == true) {
 			_$file_title.html(_$file_title.html() + '*');
 			_saved_flag = false;
 		}
 	}
 	
+	var _undo = function(event) {
+		_blur();
+		if(_history_index - 1 > 0) {
+			var html = LZW.decompress(_history[--_history_index - 1]);
+			_load_html(html);
+			_set_unsaved();
+		}
+	}
+	
+	var _redo = function(event) {
+		_blur();
+		if(_history_index < _history.length) {
+			var html = LZW.decompress(_history[_history_index++]);
+			_load_html(html);
+			_set_unsaved();
+		}
+	}
+	
 	var _new_design = function() {
 		_selectbox_collection.reset();
-		_set_style_text('');
-		_set_edit_text('');
 		$('.box', _$container).remove();
 		_set_file_title('Untitled');
 		_saved_flag = true;
 		_obj_id = 0;
+		_set_history(true);
 	}
 	
 	var _import_css = function(file) {
@@ -999,49 +1143,59 @@ function Meldbox() {
 			
 			'statusCode': {
 				200: function(html) {
-					_$container.html(html);
-			
 					_set_cookie('open_file', file, 735);
-			
 					_set_file_title(file);
 					_saved_flag = true;
-		
-					$('> *', _$container).each(function() {
-						var $object = $(this);
-						var obj_id = parseInt($object.attr('id').split('-')[1]);
-						if(obj_id > _obj_id) _obj_id = obj_id;
-						
-						_bind_object($object);
-					});
-			
-					// Reset CSS library
-					_$css_libraries.empty();
-			
-					// Add CSS data libraries
-					$('.css-lib').each(function(i, elem) {
-						var $data = $(elem);
-						var css_lib_id = $data.attr('id').split('-')[0];
-						var file = $data.attr('data-desc');
-						var type = $data.attr('type');
-				
-						// Add CSS data library to list
-						_append_css_lib(css_lib_id, file);
-				
-						// Apply style and check box
-						if(type == 'text/css') {
-							$('#' + css_lib_id + '-css-lib-checkbox').attr('checked', true);
-						}
-					});
-			
-					// Reset panels
-					_control_panel_collection.resetPanels();
+					_load_html(html);
+					_set_history(true);
 				}
 			}
 		});
 	}
 	
+	// Used for opening files and undo/redo
+	var _load_html = function(html) {
+		_$container.html(html);
+	
+		// Iterate through each Meldbox element, get the largest object id and bind the click events
+		$('.box').each(function() {
+			var $object = $(this);
+			var obj_id = parseInt($object.attr('id').split('-')[1]);
+			if(obj_id > _obj_id) _obj_id = obj_id;
+			
+			_bind_object($object);
+		});
+
+		// Reset CSS library
+		_$css_libraries.empty();
+
+		// Add CSS data libraries
+		$('.css-lib').each(function(i, elem) {
+			var $data = $(elem);
+			var css_lib_id = $data.attr('id').split('-')[0];
+			var file = $data.attr('data-desc');
+			var type = $data.attr('type');
+	
+			// Add CSS data library to list
+			_append_css_lib(css_lib_id, file);
+	
+			// Apply style and check box
+			if(type == 'text/css') {
+				$('#' + css_lib_id + '-css-lib-checkbox').attr('checked', true);
+			}
+		});
+
+		// Reset panels
+		_control_panel_collection.resetPanels();
+	}
+	
 	var _copy = function() {
 		_selectbox_collection.copyToClipboard();
+	}
+	
+	var _cut_selected = function() {
+		_copy();
+		_delete_selected();
 	}
 	
 	var _paste = function() {
@@ -1049,6 +1203,33 @@ function Meldbox() {
 		_.each(_$clipboard, function($paste) {
 			_insert_object($paste.clone(), true);
 		});
+	}
+	
+	var _fit_to_content = function() {
+		_selectbox_collection.updateCSS({'width': 'auto', 'height': 'auto'});
+	}
+	
+	var _lock_selected = function() {
+		_selectbox_collection.updateCSS({'pointer-events': 'none'});
+		_blur();
+	}
+	
+	var _unlock_all = function() {
+		var count = 0;
+		$('.box').each(function(i, elem) {
+			var $object = $(elem);
+			if($object.css('pointer-events') == 'none') {
+				$object.css('pointer-events', '');
+				count++;
+			}
+		});
+		
+		if(count) _update_history();
+		alert('Elements unlocked: ' + count);
+	}
+	
+	var _delete_selected = function() {
+		_selectbox_collection.deleteSelected();
 	}
 	
 	var _update_edit_text = function() {
@@ -1091,6 +1272,10 @@ function Meldbox() {
 		}
 	}
 	
+	var _insert_meldbox = function(css) {
+		_insert_object('<div class="box clickable"><span></span></div>', false, css);
+	}
+	
 	
 	/**************************************
 	 * Capture document events
@@ -1102,27 +1287,17 @@ function Meldbox() {
 	$(document).mousedown(function(e) {
 		_mouse_down = e;
 		
-		if($(e.target).is('body, #design_canvas')) {
-			_multi_select.mouseDown(e);
-		}
-		
-		_selectbox_collection.mouseDown = _mouse_down;
+		// Global Listeners
+		_multi_select.mouseDown(e);
 	});
 	
 	$(document).mousemove(function(e) {
 		_mouse_move_event = e;
-		
 		e.preventDefault();
 		
-		// Move grabbed object
-		if(_grab_object && e.ctrlKey) {
-			_selectbox_collection.moveSelection(e);
-		}
-		
-		// Resize multi select box
-		if(_multi_select.enabled) {
-			_multi_select.mouseMove(e);
-		}
+		// Global Listeners
+		_selectbox_collection.moveSelection(e);
+		_multi_select.mouseMove(e);
 	});
 	
 	$(document).mouseup(function(e) {
@@ -1130,29 +1305,66 @@ function Meldbox() {
 		_mouse_down = undefined;
 		_mouse_move_event = undefined;
 		
-		
-		if(_grab_object) {
-			_selectbox_collection.dropSelection();
-			_grab_object = false;
-		}
-		
-		if(_multi_select.enabled) {
-			_multi_select.mouseUp(e);
-		}
+		// Global Listeners
+		_selectbox_collection.dropSelection(e);
+		_multi_select.mouseUp(e);
 	});
 	
 	$(document).keydown(function(e) {
+	
 		// Focused objects only
 		if($(e.target).is('body')) {
+		
+			// Holding control
 			if(e.ctrlKey) {
-				if(e.which == 67) _copy(); // Ctrl + C - Copy
-				else if(e.which == 86) _paste(); // Ctrl + V - Paste
-				
-			} else {
-				if(e.keyCode == 16) { // Hold down shift
-					_shift_down_flag = true;
+			
+				// Holding Alt
+				if(e.altKey) {
+					// Ctrl + Alt + L - Lock
+					if(e.which == 76) {
+						_lock_selected();
+					}
 				}
 				
+				else {
+					// Ctrl + A - Select All
+					if(e.which == 65) {
+						e.preventDefault();
+						_select_all();
+					}
+			
+					// Ctrl + C - Copy
+					else if(e.which == 67) _copy();
+					
+					// Ctrl + D - Deselect
+					else if(e.which == 68) {
+						e.preventDefault();
+						_blur();
+					}
+				
+					// Ctrl + V - Paste
+					else if(e.which == 86) _paste();
+				
+					// Ctrl + X - Cut
+					else if(e.which == 88) _cut_selected();
+				
+					// Ctrl + Y - Redo
+					else if(e.which == 89) _redo();
+				
+					// Ctrl + Z - Undo
+					else if(e.which == 90) _undo();
+				}
+			}
+		
+			// Blur or exit preview mode (esc)
+			else if(e.keyCode == 27) {
+				if(_preview_mode_flag) _preview_mode(false);		
+				else _blur();
+			}
+		
+			// Delete or Backspace
+			else if(e.keyCode == 46 || e.keyCode == 8) {
+				_delete_selected();
 			}
 		}
 		
@@ -1171,9 +1383,7 @@ function Meldbox() {
 		}
 		
 		// Global listeners
-		if(e.keyCode == 16) { // Release shift
-			_shift_down_flag = false;
-		}
+		_selectbox_collection.keyUp(e);
 	});
 	
 	$(document).keypress(function(e) {
@@ -1244,17 +1454,6 @@ function Meldbox() {
 			else if(e.charCode == 44) {
 				_selectbox_collection.setZIndexDelta(-1);
 			}
-		
-			// Blur or exit preview mode (esc)
-			else if(e.keyCode == 27) {
-				if(_preview_mode_flag) _preview_mode(false);		
-				else _blur();
-			}
-		
-			// Delete
-			else if(e.keyCode == 46) {
-				_selectbox_collection.deleteSelected();
-			}
 		}
 		
 		// Global listeners
@@ -1281,7 +1480,7 @@ function Meldbox() {
 			
 			switch(key) {
 				case 'add_box':
-					_insert_object('<div class="box clickable"><span></span></div>');
+					_insert_meldbox();
 				break;
 				
 				case 'copy':
@@ -1289,8 +1488,11 @@ function Meldbox() {
 				break;
 				
 				case 'cut':
-					_copy();
-					_selectbox_collection.deleteSelected();
+					_cut_selected();
+				break;
+				
+				case 'lock':
+					_lock_selected();
 				break;
 				
 				case 'paste':
@@ -1298,11 +1500,11 @@ function Meldbox() {
 				break;
 				
 				case 'delete':
-					_selectbox_collection.deleteSelected();
+					_delete_selected();
 				break;
 				
-				case 'fit_to_text':
-					_selectbox_collection.updateCSS({'width': 'auto', 'height': 'auto'});
+				case 'fit_to_content':
+					_fit_to_content();
 				break;
 			}
 		},
@@ -1310,39 +1512,22 @@ function Meldbox() {
 			"add_box": {name: "Add a MeldBox"},
 			"sep1": "-------",
 			"copy": {
-				name: "Copy",
-				disabled: function(key, options) {
-					if(options.$trigger.is('#container')) return true;
-					else return false;
-				}
+				name: 'Copy <span style="float: right">Ctrl + C</span>'
 			},
 			"cut": {
-				name: "Cut",
-				disabled: function(key, options) {
-					if(options.$trigger.is('#container')) return true;
-					else return false;
-				}
+				name: 'Cut <span style="float: right">Ctrl + X</span>'
+			},
+			"lock": {
+				name: 'Lock <span style="float: right">Ctrl + Alt + L</span>'
 			},
 			"paste": {
-				name: "Paste",
-				disabled: function(key, options) {
-					if(!_$clipboard) return true;
-					else return false;
-				}
+				name: 'Paste <span style="float: right">Ctrl + V</span>'
 			},
 			"delete": {
-				name: "Delete",
-				disabled: function(key, options) {
-					if(options.$trigger.is('#container')) return true;
-					else return false;
-				}
+				name: "Delete"
 			},
-			"fit_to_text": {
-				name: "Fit to content",
-				disabled: function(key, options) {
-					if(options.$trigger.is('#container')) return true;
-					else return false;
-				}
+			"fit_to_content": {
+				name: "Fit to content"
 			}
 		}
 	});
@@ -1443,12 +1628,56 @@ function Meldbox() {
 		_preview_mode(on);
 	}
 	
+	this.undo = function() {
+		_undo();
+	}
+	
+	this.redo = function() {
+		_redo();
+	}
+	
+	this.cut = function() {
+		_cut_selected();
+	}
+	
+	this.copy = function() {
+		_copy();
+	}
+	
+	this.paste = function() {
+		_paste();
+	}
+	
+	this.clear = function() {
+		_delete_selected();
+	}
+	
+	this.insertMeldbox = function(css) {
+		_insert_meldbox(css);
+	}
+	
+	this.selectAll = function() {
+		_select_all();
+	}
+	
+	this.deselect = function() {
+		_blur();
+	}
+	
+	this.lockSelection = function() {
+		_lock_selected();
+	}
+	
+	this.unlockAll = function() {
+		_unlock_all();
+	}
+	
 	
 	/**************************
 	 * Stop default browser drag
 	 **************************/
 	$(document).bind("dragstart", function(e) {
-		if(!$(e.target).hasClass('ui-dialog')) return false;
+		return false;
 	});
 	
 	
@@ -1545,6 +1774,61 @@ function Meldbox() {
 			randomstring += chars.substring(rnum,rnum+1);
 		}
 		return randomstring;
+	}
+	
+	//LZW Compression/Decompression for Strings
+	var LZW = {
+	
+		compress: function(s) {
+			var dict = {};
+			var data = (s + "").split("");
+			var out = [];
+			var currChar;
+			var phrase = data[0];
+			var code = 256;
+			for (var i=1; i<data.length; i++) {
+				currChar=data[i];
+				if (dict[phrase + currChar] != null) {
+				    phrase += currChar;
+				}
+				else {
+				    out.push(phrase.length > 1 ? dict[phrase] : phrase.charCodeAt(0));
+				    dict[phrase + currChar] = code;
+				    code++;
+				    phrase=currChar;
+				}
+			}
+			out.push(phrase.length > 1 ? dict[phrase] : phrase.charCodeAt(0));
+			for (var i=0; i<out.length; i++) {
+				out[i] = String.fromCharCode(out[i]);
+			}
+			return out.join("");
+		},
+		
+		decompress: function(s) {
+			var dict = {};
+			var data = (s + "").split("");
+			var currChar = data[0];
+			var oldPhrase = currChar;
+			var out = [currChar];
+			var code = 256;
+			var phrase;
+			for (var i=1; i<data.length; i++) {
+				var currCode = data[i].charCodeAt(0);
+				if (currCode < 256) {
+				    phrase = data[i];
+				}
+				else {
+				   phrase = dict[currCode] ? dict[currCode] : (oldPhrase + currChar);
+				}
+				out.push(phrase);
+				currChar = phrase.charAt(0);
+				dict[code] = oldPhrase + currChar;
+				code++;
+				oldPhrase = phrase;
+			}
+			return out.join("");
+		}
 	}
 }
 

@@ -1,5 +1,30 @@
 # Meldbox Changlog
 
+### Meldbox version 1.5
+
+- Clicking on canvas will deselect
+- Multi select works when dragging from canvas
+- Removed need to hold Ctrl to drag elements
+- Dragging doesn't throw element
+- Updated Welcome file
+- Added LZW compression function
+- Changed the way Backbone objects receive mouse events
+- Made selecting elements much more like Fireworks
+- Selection bug fixes
+- Added undo/redo funtionality
+- mBox HTML and CSS select reset fixes
+- Select all (Ctrl + A)
+- Element locking (Ctrl + Alt + L)
+- Added unlock all
+- Select box and select all will not select mBox elements with `pointer-events: none`
+- DRY'ed some functions
+- Backspace key will also delete selected
+- Added `Ctrl + X` to cut selected
+- Added more public Meldbox methods
+- Added menu items for editing, viewing and selecting elements
+- Added quick key reference to context menu and drop down menu
+- Multi select box is deactive in preview mode
+
 ### Meldbox version 1.4
 
 - Added multi selection box when dragging from canvas, outside of canvas or locked elements (coming soon)

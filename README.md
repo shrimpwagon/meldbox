@@ -20,12 +20,7 @@ During designing this will cause the browser to naturally navigate to that link 
 
 #### SAVE OFTEN
 
-Things are still buggy and crashes may occur.
-
-
-#### THERE IS NO UNDO...YET
-
-Create backups often. If you actually give Meldbox a try you might start doing some serious design work.
+Things are still buggy and crashes may occur. Create backups often. If you actually give Meldbox a try you might start doing some serious design work.
 
 #### NOT PROGRAMMED WITH SECURITY IN MIND
 
@@ -43,7 +38,6 @@ Installation is extremely simple. There is no configuration file and it takes no
 
 ### Basic Designing
 
-- Hold `Ctrl` to click and drag
 - Right-click to add a Meldbox
 - Click a Meldbox element and style it using the CSS editor
 - Add inner HTML to insert content using the HTML editor
@@ -56,12 +50,14 @@ Installation is extremely simple. There is no configuration file and it takes no
 
 ### Keys While Elements Are Selected
 
-- Press `Esc` to deselect
+- `Esc` to deselect
 - Use the arrow keys to move 1px at a time
 - While holding `Ctrl`, using the arrow keys will resize 1px at a time
-- Press `,` to decrease z-index by 1
-- Press `.`  to increase z-index by 1
-- Press `Delete` to remove elements
+- `,` to decrease z-index by 1
+- `.`  to increase z-index by 1
+- `Delete` to remove elements
+- `Ctrl + Z` to undo
+- `Ctrl + Y` to redo
 
 ### Adding CSS stylesheets
 

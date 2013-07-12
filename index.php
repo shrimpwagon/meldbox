@@ -3,7 +3,7 @@
 /*
 
 Meldbox
-Version: 1.4
+Version: 1.5
 
 Author:
 	Shawn Welch <shawn@meldbox.net>
@@ -106,7 +106,37 @@ var init = function() {
 		</div>
 	</div>
 	<div>
-		<a href="javascript: void(0)">View</a>
+		<a href="javascript: void(0)">Edit</a>
+		<div>
+			<a href="javascript: $.Meldbox.undo()">Undo<span style="float: right;">Ctrl + Z</span></a>
+			<a href="javascript: $.Meldbox.redo()">Redo<span style="float: right;">Ctrl + Y</span></a>
+			<div class="seperator"></div>
+			<a href="javascript: $.Meldbox.insertMeldbox({'top': '0px', 'left': '0px'})">Insert Meldbox</a>
+			<div class="seperator"></div>
+			<a href="javascript: $.Meldbox.cut()">Cut<span style="float: right;">Ctrl + X</span></a>
+			<a href="javascript: $.Meldbox.copy()">Copy<span style="float: right;">Ctrl + C</span></a>
+			<a href="javascript: $.Meldbox.paste()">Paste<span style="float: right;">Ctrl + V</span></a>
+			<a href="javascript: $.Meldbox.clear()">Clear<span style="float: right;">Backspace</span></a>
+		</div>
+	</div>
+	<div>
+		<a href="javascript: void(0)">Select</a>
+		<div>
+			<a href="javascript: $.Meldbox.selectAll()">Select All<span style="float: right;">Ctrl + A</span></a>
+			<a href="javascript: $.Meldbox.deselect()">Deselect<span style="float: right;">Ctrl + D</span></a>
+		</div>
+	</div>
+	<div>
+		<a href="javascript: void(0)">Modify</a>
+		<div>
+			<a href="javascript: $.Meldbox.toggleDialog('canvas', true)">Canvas</a>
+			<div class="seperator"></div>
+			<a href="javascript: $.Meldbox.lockSelection()">Lock<span style="float: right;">Ctrl + Alt + L</span></a>
+			<a href="javascript: $.Meldbox.unlockAll()">Unlock All</a>
+		</div>
+	</div>
+	<div>
+		<a href="javascript: void(0)">Window</a>
 		<div>
 			<a href="javascript: $.Meldbox.closeDialogs()" id="menu-closedialogs">Close All</a>
 			<div class="seperator"></div>
@@ -252,7 +282,7 @@ var init = function() {
 		</h4>
 		<div>
 			<p style="text-align: center; font-size: 12px">
-				Meldbox v1.4<br /><br />
+				Meldbox v1.5<br /><br />
 				Author:<br />
 				Shawn Welch &lt;<a href="mailto:shawn@meldbox.net">shawn@meldbox.net</a>&gt;<br /><br />
 				Source and Issues:<br /><a href="https://github.com/shrimpwagon/meldbox" target="_blank">github.com/shrimpwagon/meldbox</a><br /><br />

@@ -1,29 +1,17 @@
 # TODO:
 
-## Fixes
-
-- Dragging sometimes "throws" element
-
-
-## Features
-
-In order of importance
+## Feature Requests
 
 - Remember placement of panels
 - Drag and resize control panels
 - Edit imported CSS stylesheet libraries and create new ones
 - Grouping
-- Select box (Marquee tool)
-- Undo/redo
 - rgb() convert to hex in CSS element box
 - Delete file
 - Trim canvas
 - Layer manager
 - mBox class panel
-
-## Nice to Have
-
-- Ctrl + A (Select All)
+- Zoom
 - mBox onclick open file panel (mBox properties panel?)
 - Templates
 - autosave
