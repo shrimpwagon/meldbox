@@ -1682,6 +1682,14 @@ function Meldbox() {
 	
 	
 	/**************************
+	 * Alert before going to another page
+	 **************************/
+	window.onbeforeunload = function() {
+		return "Are you sure you want to exit/reload Meldbox?";
+	}
+	
+	
+	/**************************
 	 * Panel controls
 	 **************************/
 	$('.expand-panel').on('click', function(event) {

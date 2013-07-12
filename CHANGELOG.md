@@ -24,6 +24,7 @@
 - Added menu items for editing, viewing and selecting elements
 - Added quick key reference to context menu and drop down menu
 - Multi select box is deactive in preview mode
+- Added a message alerting if user wants to exit Meldbox
 
 ### Meldbox version 1.4
 
