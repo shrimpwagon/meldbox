@@ -1,5 +1,11 @@
 # Meldbox Changlog
 
+### Meldbox version 1.6
+
+- Chrome and Safari support
+- Fixed lock function when nothing is selected
+- Changed Welcome file to a tutorial and added some examples
+
 ### Meldbox version 1.5
 
 - Clicking on canvas will deselect

@@ -1,0 +1,30 @@
+<style id="canvas-alignment-style"> #design-area { float: right; height: 1500px; } #design-canvas { left: -1023px; } </style><div style="color: white; padding-top: 4px; height: 21px; font-size: 12px; top: 0px; left: 105px; background: none repeat scroll 0% 0% rgb(230, 96, 67); padding-left: 9px; width: 17px;" id="obj-2" class="box clickable"><span><div class="social-icon">
+  <i class="icon icon-google-plus">
+  </i>
+</div></span></div><div style="color: white; padding-top: 4px; height: 21px; font-size: 12px; top: 0px; left: 53px; background: none repeat scroll 0% 0% rgb(5, 174, 231); padding-left: 8px; width: 18px;" id="obj-3" class="box clickable"><span><div class="social-icon">
+  <i class="icon icon-twitter">
+  </i>
+</div></span></div><div style="color: white; padding-top: 4px; height: 21px; font-size: 12px; top: 0px; left: 79px; background: none repeat scroll 0% 0% rgb(82, 125, 193); padding-left: 10px; width: 16px;" id="obj-4" class="box clickable"><span><div class="social-icon">
+<i class="icon icon-facebook"></i>
+</div></span></div><div style="color: white; padding-top: 4px; height: 21px; font-size: 12px; top: 0px; left: 131px; background: none repeat scroll 0% 0% rgb(253, 106, 158); padding-left: 8px; width: 18px;" id="obj-7" class="box clickable"><span><div class="social-icon">
+  <i class="icon icon-dribbble">
+  </i>
+</div></span></div><div style="color: white; padding-top: 4px; height: 21px; font-size: 12px; top: 0px; left: 157px; background: none repeat scroll 0% 0% rgb(250, 161, 9); padding-left: 8px; width: 18px;" id="obj-8" class="box clickable"><span><div class="social-icon">
+  <i class="icon icon-rss">
+  </i>
+</div></span></div><div style="top: 48px; left: 53px; color: rgb(85, 85, 85); font-size: 32px; width: auto; height: auto; background: none repeat scroll 0% 0% transparent; font-family: Verdana;" id="obj-9" class="box clickable"><span>Welcome</span></div><div style="top: 176px; left: -16px; width: 1100px; background: none repeat scroll 0% 0% rgb(238, 238, 238);" id="obj-10" class="box clickable"><span></span></div><div style="top: 0px; left: 299px; background: none repeat scroll 0% 0% rgb(37, 195, 137); width: 140px; height: 140px;" id="obj-11" class="box clickable"><span></span></div><div style="top: 105px; left: 307px; color: rgb(255, 255, 255); width: auto; height: auto; background: none repeat scroll 0% 0% transparent; font-size: 16px;" id="obj-12" class="box clickable"><span>Home</span></div><div style="color: white; padding-top: 6px; height: 42px; font-size: 24px; top: 40px; left: 345px; background: none repeat scroll 0% 0% rgba(255, 255, 255, 0.3); padding-left: 13px; width: 35px; border-radius: 50px;" id="obj-13" class="box clickable"><span><div class="social-icon">
+  <i class="icon icon-home">
+  </i>
+</div></span></div><div style="top: 84px; left: 55px; color: rgb(170, 170, 170); font-size: 18px; width: auto; height: auto; background: none repeat scroll 0% 0% transparent; font-family: Verdana;" id="obj-14" class="box clickable"><span>Click and drag elements</span></div><div style="top: 0px; left: 439px; background: none repeat scroll 0% 0% rgb(255, 185, 1); width: 140px; height: 140px;" id="obj-15" class="box clickable"><span></span></div><div style="top: 105px; left: 448px; color: rgb(255, 255, 255); width: auto; height: auto; background: none repeat scroll 0% 0% transparent; font-size: 16px;" id="obj-16" class="box clickable"><span>Pages</span></div><div style="color: white; padding-top: 6px; height: 42px; font-size: 24px; top: 40px; left: 485px; background: none repeat scroll 0% 0% rgba(255, 255, 255, 0.3); padding-left: 12px; width: 36px; border-radius: 50px;" id="obj-17" class="box clickable"><span><div class="social-icon">
+  <i class="icon icon-sitemap">
+  </i>
+</div></span></div><div style="top: 0px; left: 579px; background: none repeat scroll 0% 0% rgb(222, 98, 98); width: 140px; height: 140px;" id="obj-18" class="box clickable"><span></span></div><div style="top: 105px; left: 588px; color: rgb(255, 255, 255); width: auto; height: auto; background: none repeat scroll 0% 0% transparent; font-size: 16px;" id="obj-19" class="box clickable"><span>Blog</span></div><div style="color: white; padding-top: 8px; height: 40px; font-size: 24px; top: 40px; left: 625px; background: none repeat scroll 0% 0% rgba(255, 255, 255, 0.3); padding-left: 12px; width: 36px; border-radius: 50px;" id="obj-20" class="box clickable"><span><div class="social-icon">
+  <i class="icon icon-bullhorn">
+  </i>
+</div></span></div><div style="top: 0px; left: 719px; background: none repeat scroll 0% 0% rgb(22, 145, 189); width: 140px; height: 140px;" id="obj-21" class="box clickable"><span></span></div><div style="top: 105px; left: 728px; color: rgb(255, 255, 255); width: auto; height: auto; background: none repeat scroll 0% 0% transparent; font-size: 16px;" id="obj-22" class="box clickable"><span>Portfolio</span></div><div style="color: white; padding-top: 8px; height: 40px; font-size: 24px; top: 40px; left: 765px; background: none repeat scroll 0% 0% rgba(255, 255, 255, 0.3); padding-left: 12px; width: 36px; border-radius: 50px;" id="obj-23" class="box clickable"><span><div class="social-icon">
+  <i class="icon icon-briefcase">
+  </i>
+</div></span></div><div style="top: 0px; left: 859px; background: #166BA2; width: 140px; height: 140px;" id="obj-24" class="box clickable"><span></span></div><div style="top: 105px; left: 868px; color: rgb(255, 255, 255); width: auto; height: auto; background: none repeat scroll 0% 0% transparent; font-size: 16px;" id="obj-25" class="box clickable"><span>Portfolio</span></div><div style="color: white; padding-top: 8px; height: 40px; font-size: 24px; top: 40px; left: 905px; background: none repeat scroll 0% 0% rgba(255, 255, 255, 0.3); padding-left: 12px; width: 36px; border-radius: 50px;" id="obj-26" class="box clickable"><span><div class="social-icon">
+  <i class="icon icon-envelope">
+  </i>
+</div></span></div>

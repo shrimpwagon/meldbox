@@ -1,1 +1,49 @@
-<style id="canvas-alignment-style"> #design-area { float: right; height: 1500px; } #design-canvas { left: -1023px; } </style>
+<div style="top: 18px; left: 24px; width: auto; height: auto; background: none repeat scroll 0% 0% transparent; pointer-events: none;" id="obj-29" class="box clickable"><span><h1>
+  Welcome to Meldbox!
+</h1>
+You are probably new so lets begin ...
+<br>
+<br>
+<br>
+Start by adding a Meldbox.
+<br>
+<br>Right-click somewhere right of this text and choose "Add a Meldbox"
+<br>
+<br>
+You will see that it is now selected.
+<br>
+<br>
+If it becomes deselected simply left-click on it to select.
+<br>
+<br>
+Click into the "mBox Inner HTML" area on the left.
+<br>
+<br>
+Type 
+<span class="mb-instruction">
+  &lt;h2&gt;Hello World&lt;/h2&gt;
+</span> and press Ctrl + Enter.
+<br>
+<br>
+Now right-click the Meldbox and select "Fit to content"
+<br>
+<br>
+Next, click into the "mBox CSS Style" area on the left while the Meldbox is still selected.
+<br>
+<br>
+On a new line, enter   
+<span class="mb-instruction">background: none;</span>
+then press Ctrl + Enter.
+<br>
+<br>
+Left-click and drag your new Meldbox in place.
+<br>
+<br>
+Up top, hover over File, click Save. Or you can press Ctrl + S.
+<br>
+<br>
+Congratulations! You have made your first Meldbox.</span></div><style id="681e309d9bcf5c465c8eed75c384dda7-css-lib-data" data-desc="tutorial.css" type="text/css" class="css-lib" scoped="scoped">.mb-instruction {
+	font-family: Courier;
+	font-style: italic;
+	font-weight: bold;
+}</style><style id="canvas-alignment-style"> #design-area { float: right; height: 1500px; } #design-canvas { left: -1023px; } </style>

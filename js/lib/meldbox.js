@@ -1,7 +1,7 @@
 /*
 
 Meldbox
-Version: 1.5
+Version: 1.6
 
 Author:
 	Shawn Welch <shawn@meldbox.net>
@@ -1088,7 +1088,7 @@ function Meldbox() {
 		 $.ajax('css/lib/' + file, {
 		 	'dataType': 'text',
 		 	'success': function(data) {
-				_$container.append('<style id="' + id + '-css-lib-data" data-desc="' + file + '" type="text/plain" class="css-lib" scoped="scoped">' + data + '</style>');
+				_$container.append('<style id="' + id + '-css-lib-data" data-desc="' + file + '" type="text/css" class="css-lib" scoped="scoped">' + data + '</style>');
 				_update_history();
 				_append_css_lib(id, file);
 		 	}
@@ -1099,7 +1099,7 @@ function Meldbox() {
 		var checkbox_id = id + '-css-lib-checkbox';
 		var remove_id = id + '-css-lib-remove';
 		if($('#' + checkbox_id).length) return false;
-		_$css_libraries.append('<div id="' + id + '-css-lib-div" class="css-lib-div">' + desc + '<br /><input type="checkbox" value="' + id + '" id="' + checkbox_id + '" /> Apply <button id="' + remove_id + '">Remove</button></div>');
+		_$css_libraries.append('<div id="' + id + '-css-lib-div" class="css-lib-div">' + desc + '<br /><input type="checkbox" value="' + id + '" id="' + checkbox_id + '" checked="checked" /> Apply <button id="' + remove_id + '">Remove</button></div>');
 		$('#' + checkbox_id).on('click', function() {
 			var $this = $(this);
 			var css_lib_id = $this.val();
@@ -1121,12 +1121,14 @@ function Meldbox() {
 	
 	var _apply_css_style = function(css_lib_id) {
 		var $css_lib_data = $('#' + css_lib_id + '-css-lib-data');
-		$css_lib_data.attr('type', 'text/css');
+		$css_lib_data.removeAttr('disabled');
+		$css_lib_data[0].disabled = false;
 	}
 	
 	var _remove_css_style = function(css_lib_id) {
-		var css_lib_data = $('#' + css_lib_id + '-css-lib-data');
-		css_lib_data.attr('type', 'text/plain');
+		var $css_lib_data = $('#' + css_lib_id + '-css-lib-data');
+		$css_lib_data.attr('disabled', 'disabled');
+		$css_lib_data[0].disabled = true;
 	}
 	
 	var _open_file = function(file, force) {
@@ -1158,9 +1160,10 @@ function Meldbox() {
 		_$container.html(html);
 	
 		// Iterate through each Meldbox element, get the largest object id and bind the click events
+		var $object, obj_id;
 		$('.box').each(function() {
-			var $object = $(this);
-			var obj_id = parseInt($object.attr('id').split('-')[1]);
+			$object = $(this);
+			obj_id = parseInt($object.attr('id').split('-')[1]);
 			if(obj_id > _obj_id) _obj_id = obj_id;
 			
 			_bind_object($object);
@@ -1170,19 +1173,21 @@ function Meldbox() {
 		_$css_libraries.empty();
 
 		// Add CSS data libraries
+		var $data, css_lib_id;
 		$('.css-lib').each(function(i, elem) {
 			var $data = $(elem);
 			var css_lib_id = $data.attr('id').split('-')[0];
-			var file = $data.attr('data-desc');
-			var type = $data.attr('type');
 	
 			// Add CSS data library to list
-			_append_css_lib(css_lib_id, file);
+			_append_css_lib(css_lib_id, $data.attr('data-desc'));
 	
 			// Apply style and check box
-			if(type == 'text/css') {
+			if($data.attr('disabled') != 'disabled') {
 				$('#' + css_lib_id + '-css-lib-checkbox').attr('checked', true);
 			}
+			
+			// Turn them off if disabled
+			else $data[0].disabled = true;
 		});
 
 		// Reset panels
@@ -1364,6 +1369,7 @@ function Meldbox() {
 		
 			// Delete or Backspace
 			else if(e.keyCode == 46 || e.keyCode == 8) {
+				e.preventDefault();
 				_delete_selected();
 			}
 		}
