@@ -31,6 +31,49 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+// Set when developing/debugging
+var MB_DEBUG = false;
+
+// Browser detection flags
+var IS_WIN = navigator.userAgent.match(/Windows/i) && true;
+var IS_MAC = navigator.userAgent.match(/Mac/i) && true;
+var IS_LINUX = navigator.userAgent.match(/Linux/i) && true;
+var IS_MOBILE = (navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/webOS/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/BlackBerry/i) || navigator.userAgent.match(/Windows Phone/i)) && true;
+
+var IS_FIREFOX = navigator.userAgent.match(/Firefox/i) && true;
+var FIREFOX_VER = navigator.userAgent.match(/Firefox\/([0-9.]+)/i);
+FIREFOX_VER = FIREFOX_VER && FIREFOX_VER[1] && parseFloat(FIREFOX_VER[1]);
+
+var IS_CHROME = navigator.userAgent.match(/Chrome/i) && true;
+var CHROME_VER = navigator.userAgent.match(/Chrome\/([0-9.]+)/i);
+CHROME_VER = CHROME_VER && CHROME_VER[1] && parseFloat(CHROME_VER[1]);
+
+var IS_SAFARI = navigator.userAgent.match(/Safari/i) && !IS_CHROME && true;
+var SAFARI_VER = navigator.userAgent.match(/Version\/([0-9.]+)/i);
+SAFARI_VER = SAFARI_VER && SAFARI_VER[1] && parseFloat(SAFARI_VER[1]);
+
+var IS_MSIE = navigator.userAgent.match(/MSIE/i) && true;
+var MSIE_VER = navigator.userAgent.match(/MSIE ([0-9.]+)/i);
+MSIE_VER = MSIE_VER && MSIE_VER[1] && parseFloat(MSIE_VER[1]);
+
+// Warning messages
+if(IS_MSIE) {
+	alert("Meldbox currently does not support Internet Explorer.\n\nSome features may not work.");
+
+} else if(IS_MOBILE) {
+	alert("Meldbox currently can not be used effectively on a mobile device.");
+
+} else if(IS_FIREFOX && FIREFOX_VER < 25) {
+	alert("Please upgrade your Firefox version to the latest release in order to properly use Meldbox");
+
+} else if(IS_CHROME && CHROME_VER < 31) {
+	alert("Please upgrade your Chrome version to the latest release in order to properly use Meldbox");
+
+} else if(IS_SAFARI && SAFARI_VER < 5.1) {
+	alert("Please upgrade your Safari version to the latest release in order to properly use Meldbox");
+}
+
+// Main control object
 function Meldbox() {
 
 
@@ -1690,8 +1733,11 @@ function Meldbox() {
 	/**************************
 	 * Alert before going to another page
 	 **************************/
-	window.onbeforeunload = function() {
-		return "Are you sure you want to exit/reload Meldbox?";
+
+	if(!MB_DEBUG) {
+		window.onbeforeunload = function() {
+			return "Are you sure you want to exit/reload Meldbox?";
+		}
 	}
 	
 	
@@ -1750,20 +1796,36 @@ function Meldbox() {
 	/********************************
 	 * Init codemirror
 	 ********************************/
-	var cmEditText = CodeMirror.fromTextArea(_$edit_text[0], {mode:"htmlmixed"});
-	cmEditText.on('keypress', function(instance, event) {
-		if(event.ctrlKey && event.keyCode == 13) _update_edit_text();
-		else if(event.keyCode == 27) {
-			document.activeElement.blur();
+	var cmEditText = CodeMirror.fromTextArea(_$edit_text[0], {
+		mode:"htmlmixed",
+		onKeyEvent: function(editor, event) {
+			if(event.type == "keypress") {
+				if(event.ctrlKey) {
+					if(event.keyCode == 10 || event.keyCode == 13) _update_edit_text();
+
+				} else {
+					if(event.keyCode == 27) {
+						document.activeElement.blur();
+					}
+				}
+			}
 		}
 	});
 	cmEditText.setSize('100%', 120);
 	
-	var cmStyleText = CodeMirror.fromTextArea(_$style_text[0], {mode:"css"});
-	cmStyleText.on('keypress', function(instance, event) {
-		if(event.ctrlKey && event.keyCode == 13) _update_style_text();
-		else if(event.keyCode == 27) {
-			document.activeElement.blur();
+	var cmStyleText = CodeMirror.fromTextArea(_$style_text[0], {
+		mode:"css",
+		onKeyEvent: function(editor, event) {
+			if(event.type == "keypress") {
+				if(event.ctrlKey) {
+					if(event.keyCode == 10 || event.keyCode == 13) _update_style_text();
+
+				} else {
+					if(event.keyCode == 27) {
+						document.activeElement.blur();
+					}
+				}
+			}
 		}
 	});
 	cmStyleText.setSize('100%', 120);

@@ -282,7 +282,7 @@ var init = function() {
 		</h4>
 		<div>
 			<p style="text-align: center; font-size: 12px">
-				Meldbox v1.5<br /><br />
+				Meldbox v1.6<br /><br />
 				Author:<br />
 				Shawn Welch &lt;<a href="mailto:shawn@meldbox.net">shawn@meldbox.net</a>&gt;<br /><br />
 				Source and Issues:<br /><a href="https://github.com/shrimpwagon/meldbox" target="_blank">github.com/shrimpwagon/meldbox</a><br /><br />
@@ -326,6 +326,5 @@ var init = function() {
 <div id="pd-tool-container-right" class="pd-tool-container"></div>
 -->
 
-<?php @include('../google_analytics.php') ?>
 </body>
 </html>
